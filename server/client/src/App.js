@@ -11,27 +11,15 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" width={250} height={250}/>
-        <title>
-          PC-Payload Ops
-        </title> 
+        <img style={{ float: "right"}} src={logo} className="App-logo" alt="logo" width={250} height={250}/>
+        <h1>PC-Payload Ops</h1>
         <p>
           Application Name Here
         </p>
         <div>
-        <h1>Welcome to my app</h1>
         <MyButton />
         </div>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
       </header>
-    
     </div>
   );
 }
