@@ -16,7 +16,7 @@ function App() {
           PC-Payload Ops
         </title> 
         <p>
-          Edit and brodin has a massive pp
+          Application Name
         </p>
         <div>
         <h1>Welcome to my app</h1>
