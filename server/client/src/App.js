@@ -1,14 +1,27 @@
-import logo from "./logo.svg";
+import logo from "./Earth.gif";
 import "./App.css";
+
+function MyButton() {
+  return (
+    <button>I'm a button</button>
+  );
+}
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <img src={logo} className="App-logo" alt="logo" width={250} height={250}/>
+        <title>
+          PC-Payload Ops
+        </title> 
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          Edit and brodin has a massive pp
         </p>
+        <div>
+        <h1>Welcome to my app</h1>
+        <MyButton />
+        </div>
         <a
           className="App-link"
           href="https://reactjs.org"
@@ -18,6 +31,7 @@ function App() {
           Learn React
         </a>
       </header>
+    
     </div>
   );
 }
