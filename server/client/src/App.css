@@ -70,10 +70,33 @@ td {
   gap: 40px;
 }
 
-Button {
+.Button {
   padding: 30px;
   background-color: #4f90aa;
   border-radius: 5px;
   border: 2px solid #4f90aa;
   font-size: calc(10px + 2vmin);
+}
+
+.textbox{
+  padding: 30px;
+  border: 2px solid #4f90aa;
+  width: 83%;
+  height: 100px;
+  border-radius: 5px;
+}
+
+.submit-btn{
+  padding-left: 3px;
+  padding-right: 3px;
+  padding-top: 63px;
+  padding-bottom: 67px;
+  background-color: #4f90aa;
+  border-radius: 5px;
+  border: 2px solid #4f90aa;
+  font-size: calc(0.5px + 2vmin);
+}
+
+.input-group{
+  padding-bottom: 50px;
 }
