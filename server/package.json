@@ -3,14 +3,17 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "jest" 
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@babel/plugin-transform-react-jsx": "^7.22.15",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "jest-mock-server": "^0.1.0",
+    "supertest": "^6.3.3",
+    "xmlhttprequest": "^1.8.0"
   },
   "description": "",
   "devDependencies": {
