@@ -1,4 +1,5 @@
 import logo from "./Earth.gif";
+import img from "./satellite.jpg";
 import "./App.css";
 
 
@@ -27,39 +28,45 @@ function App() {
          
       </header>
 
-        <div>
+      <div className="Images">
+        
+          <img style={{ paddingLeft: 30, paddingRight: 30}} src={img} className="App-logo" alt="satimg" width={800} height={500}/>
 
-            <img style={{ float: "right", padding: 20}} src={logo} className="App-logo" alt="logo" width={600} height={600}/>
+          <img style={{ padding: 30}} src={logo} className="App-logo" alt="logo" width={500} height={500}/>
 
-            <div className="Table">
-              <table style={{ float: "right"}}>
-                <tr>
-                    <th>Image ID</th>
-                    <th>Time</th>
-                    <th>Coordinates</th>
-                </tr>
-                {data.map((val, key) => {
-                    return (
-                        <tr key={key}>
-                            <td>{val.imageID}</td>
-                            <td>{val.time}</td>
-                            <td>{val.coordinates}</td>
-                        </tr>
-                    )
-                })}
-              </table>
-            </div>
-            
-        <MyButton />
+      </div> 
+
+      <div className="ImageDesc">
+
+        <p style={{ padding: 30}}>
+        📷 Waiting for satellite imagery...
+        </p>
+          
+      </div>
+      
+      <MyButton />
+
+      <div className="Table">
+            <table style={{ float: "right"}}>
+              <tr>
+                  <th>Image ID</th>
+                  <th>Time</th>
+                  <th>Coordinates</th>
+              </tr>
+              {data.map((val, key) => {
+                  return (
+                      <tr key={key}>
+                          <td>{val.imageID}</td>
+                          <td>{val.time}</td>
+                          <td>{val.coordinates}</td>
+                      </tr>
+                  )
+              })}
+            </table>
         </div>
 
 
-        
-        
-        <div>
-        
-      </div>
-      
+
     </div>
   );
 }

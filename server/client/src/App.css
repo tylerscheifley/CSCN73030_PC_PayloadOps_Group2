@@ -40,3 +40,12 @@ td {
 .Table {
   padding: 20px;
 }
+
+.Images {
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.ImageDesc {
+  color: white;
+}
