@@ -1,9 +1,42 @@
 * { margin: 0; }
 
-
 .App-header {
-  background-color: #030303;
-  min-height: 100vh;
+  padding: 1%;
+  min-height: 10px;
   font-size: calc(10px + 2vmin);
   color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: #2e3035;
+}
+
+body {
+  background-color: #030303;
+}
+
+table {
+  border: 2px solid #4f90aa;
+  width: 800px;
+  height: 200px;
+}
+
+th {
+  text-align: left;
+  color: white;
+  padding: 1%;
+  border-bottom: 1px solid #4f90aa;
+  border-right: 1px solid #4f90aa;
+}
+
+td {
+  text-align: left;
+  color: white;
+  padding: 1%;
+  border-bottom: 1px solid #4f90aa;
+  border-right: 1px solid #4f90aa;
+}
+
+.Table {
+  padding: 20px;
 }
