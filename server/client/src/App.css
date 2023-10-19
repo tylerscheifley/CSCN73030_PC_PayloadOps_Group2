@@ -38,7 +38,8 @@ td {
 }
 
 .Table {
-  padding: 20px;
+  padding-right: 20px;
+  padding-top: 10px;
 }
 
 .Images {
@@ -48,4 +49,31 @@ td {
 
 .ImageDesc {
   color: white;
+}
+
+.ButtonLayoutCol {
+  flex-direction: column;
+  display: flex;
+  gap: 30px;
+}
+
+.ButtonLayoutRow {
+  flex-direction: row;
+  display: flex;
+  gap: 30px;
+}
+
+.HorizontalLayout{
+  justify-content: center;
+  padding: 30px;
+  display: flex;
+  gap: 40px;
+}
+
+Button {
+  padding: 30px;
+  background-color: #4f90aa;
+  border-radius: 5px;
+  border: 2px solid #4f90aa;
+  font-size: calc(10px + 2vmin);
 }

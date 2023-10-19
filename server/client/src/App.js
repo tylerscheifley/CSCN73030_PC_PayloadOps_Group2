@@ -15,6 +15,24 @@ function MyButton() {
   );
 }
 
+function MyButton1() {
+  return (
+    <button >I'm a button</button>
+  );
+}
+
+function MyButton2() {
+  return (
+    <button >I'm a button</button>
+  );
+}
+
+function MyButton3() {
+  return (
+    <button >I'm a button</button>
+  );
+}
+
 function App() {
   return (
     <div className="App">
@@ -44,10 +62,26 @@ function App() {
           
       </div>
       
-      <MyButton />
 
-      <div className="Table">
-            <table style={{ float: "right"}}>
+      <div className="HorizontalLayout">
+
+        <div className="ButtonLayoutCol">
+          <div className="ButtonLayoutRow">
+
+          <MyButton />
+          <MyButton1 />
+
+          </div>
+          <div className="ButtonLayoutRow">
+
+          <MyButton2 />
+          <MyButton3 />
+
+          </div>
+        </div>
+
+        <div className="Table">
+            <table>
               <tr>
                   <th>Image ID</th>
                   <th>Time</th>
@@ -65,7 +99,7 @@ function App() {
             </table>
         </div>
 
-
+      </div>
 
     </div>
   );
