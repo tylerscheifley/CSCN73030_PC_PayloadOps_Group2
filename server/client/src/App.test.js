@@ -2,7 +2,7 @@ import { getAllByText, queryAllByText, render, screen } from '@testing-library/r
 import App from './App';
 
 
-test('renders learn react link', () => {
+test('Renders Payload Ops Link', () => {
   render(<App />);
   const linkElement = screen.getByText(/payload ops/i);
   expect(linkElement).toBeInTheDocument();
