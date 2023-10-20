@@ -14,6 +14,16 @@ describe("GET /GroundStationPayload", () => {
   });
 });
 
+describe("GET /GroundStationPayload", () => {
+  it("Test a improper payload request with Ground Station Payload Server Mock should return a 400 Bad Request", async () => {
+    const response = await request(server).get("/GroundStationPayload");
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toEqual(
+      "Bad request. Longitude, Latitude, and NumberOfImages are required."
+    );
+  });
+});
+
 describe("POST /payloadimage", () => {
   it("should return binary image data with response code 200", async () => {
     const response = await request(server).post("/payloadimage");
