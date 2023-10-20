@@ -18,14 +18,14 @@ expect(PayloadElement).toBeInTheDocument();
 test("Checking text waiting for Waterloo Ontario", () => {
   render(<App />);
   const { getByText } = render(<h1 style={{  paddingLeft: 30}}>PC-Payload Ops</h1>);
-  const PayloadElement = getByText(/🍁Waterloo Ontario🍁/i);
+  const PayloadElement = getByText(/Waterloo Ontario🍁/i);
   expect(PayloadElement).toBeInTheDocument();
   });
 
 test("Checking text waiting for Submit Text", () => {
   render(<App />);
   const { getByText } = render(<h1 style={{  paddingLeft: 30}}>PC-Payload Ops</h1>);
-  const PayloadElement = getByText(/Submit/i);
+  const PayloadElement = getByText(/📋Submit a script.../i);
   expect(PayloadElement).toBeInTheDocument();
   });
 
