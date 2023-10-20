@@ -8,12 +8,10 @@ app.get("/GroundStationPayload", (req, res) => {
 
   if (!Longitude || !Latitude || !NumberOfImages) {
     console.log("Failed the check...");
-    return res
-      .status(400)
-      .send({
-        message:
-          "Bad request. Longitude, Latitude, and NumberOfImages are required.",
-      });
+    return res.status(400).send({
+      message:
+        "Bad request. Longitude, Latitude, and NumberOfImages are required.",
+    });
   }
 
   res.status(200).send({
