@@ -11,25 +11,25 @@ const data = [
 
 function MyButton() {
   return (
-    <button className="Button">I'm a button</button>
+    <button className="Button">I'm a button 1</button>
   );
 }
 
 function MyButton1() {
   return (
-    <button className="Button">I'm a button</button>
+    <button className="Button">I'm a button 2</button>
   );
 }
 
 function MyButton2() {
   return (
-    <button className="Button">I'm a button</button>
+    <button className="Button">I'm a button 3</button>
   );
 }
 
 function MyButton3() {
   return (
-    <button className="Button">I'm a button</button>
+    <button className="Button">I'm a button 4</button>
   );
 }
 
@@ -39,18 +39,18 @@ function App() {
      
       <header className="App-header">
 
-              <h1 style={{  paddingLeft: 30}}>PC-Payload Ops</h1>
-              <p style={{ padding: 30}}>
-              🍁Waterloo Ontario
-              </p>
+        <h1 style={{  paddingLeft: 30}}>PC-Payload Ops</h1>
+        <p style={{ padding: 30}}>
+        Waterloo Ontario🍁
+        </p>
          
       </header>
 
       <div className="Images">
         
-          <img style={{ paddingLeft: 30, paddingRight: 30}} src={img} className="App-logo" alt="satimg" width={800} height={500}/>
+        <img style={{ paddingLeft: 30, paddingRight: 30}} src={img} className="App-logo" alt="satimg" width={800} height={500}/>
 
-          <img style={{ padding: 30}} src={logo} className="App-logo" alt="logo" width={500} height={500}/>
+        <img style={{ padding: 30}} src={logo} className="App-logo" alt="logo" width={500} height={500}/>
 
       </div> 
 
@@ -62,7 +62,6 @@ function App() {
           
       </div>
       
-
       <div className="HorizontalLayout">
 
         <div className="ButtonLayoutCol">
@@ -101,10 +100,18 @@ function App() {
 
       </div>
 
+      <div className="ImageDesc">
+
+        <p style={{ padding: 30}}>
+        📋Submit a script...
+        </p>
+        
+      </div>
+
       <form>
         <div className="input-group">
           <label htmlFor="request">request</label>
-          <input className="textbox" type="text" id="request" />
+          <input className="textbox" type="text" id="request" Insert html/>
           <button type="submit" className="submit-btn">
             Submit
           </button>
