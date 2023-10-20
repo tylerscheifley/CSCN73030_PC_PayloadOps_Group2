@@ -3,7 +3,7 @@ const server = require("../server/serverMockFunctions");
 const fs = require("fs").promises;
 
 describe("GET /GroundStationPayload", () => {
-  it("Test a proper payload request with Ground Station Payload Server Mock should return a 200 OK", async () => {
+  it("BEB01-Test a proper payload request with Ground Station Payload Server Mock should return a 200 OK", async () => {
     const response = await request(server).get(
       "/GroundStationPayload?Longitude=-80.520409&Latitude=43.464256&NumberOfImages=1"
     );
@@ -15,7 +15,7 @@ describe("GET /GroundStationPayload", () => {
 });
 
 describe("GET /GroundStationPayload", () => {
-  it("Test a improper payload request with Ground Station Payload Server Mock should return a 400 Bad Request", async () => {
+  it("BEB02-Test a improper payload request with Ground Station Payload Server Mock should return a 400 Bad Request", async () => {
     const response = await request(server).get("/GroundStationPayload");
     expect(response.statusCode).toBe(400);
     expect(response.body.message).toEqual(
@@ -25,7 +25,7 @@ describe("GET /GroundStationPayload", () => {
 });
 
 describe("POST /payloadimage", () => {
-  it("should return binary image data with response code 200", async () => {
+  it("BEB03-should return binary image data with response code 200", async () => {
     const response = await request(server).post("/payloadimage");
     var imagePath = "../server/testimagerecieved.png";
     var imagecreated = false;
