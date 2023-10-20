@@ -9,10 +9,10 @@ test('Renders Payload Ops Link', () => {
 });
 
 test("Checking text waiting for satellite Imagery", () => {
-render(<App />);
-const { getByText } = render(<h1 style={{  paddingLeft: 30}}>PC-Payload Ops</h1>);
-const PayloadElement = getByText(/📷 Waiting for satellite imagery.../i);
-expect(PayloadElement).toBeInTheDocument();
+  render(<App />);
+  const { getByText } = render(<h1 style={{  paddingLeft: 30}}>PC-Payload Ops</h1>);
+  const PayloadElement = getByText(/📷 Waiting for satellite imagery.../i);
+  expect(PayloadElement).toBeInTheDocument();
 });
 
 test("Checking text waiting for Waterloo Ontario", () => {
