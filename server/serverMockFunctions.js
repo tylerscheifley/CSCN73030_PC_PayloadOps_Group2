@@ -3,8 +3,11 @@ const app = express();
 const fs = require("fs");
 const port = 3000;
 
-app.get("/GroundStationPayload", (req, res) => {
-  const { ID, NumberOfImages, Longitude, Latitude } = req.query;
+app.post("/GroundStationPayload", (req, res) => {
+  const ID = req.body.ID;
+  const NumberOfImages = req.body.NumberOfImages;
+  const Longitude = req.body.Longitude;
+  const Latitude = req.body.Latitude;
 
   if (!Longitude || !Latitude || !NumberOfImages) {
     console.log("Failed the check...");
@@ -35,7 +38,8 @@ app.post("/payloadimage", function (req, res) {
 
 app.post("/Status", (req, res) => {
   //json object with a status and id
-  const { ID, Status } = req.query;
+  const ID = req.body.ID;
+  const Status = req.body.Status;
 
   if (!ID || !Status) {
     console.log("Failed the check...");

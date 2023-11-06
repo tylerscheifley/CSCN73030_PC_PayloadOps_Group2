@@ -13,6 +13,7 @@
     "express": "^4.18.2",
     "jest-mock-server": "^0.1.0",
     "supertest": "^6.3.3",
+    "xhr2": "^0.2.1",
     "xmlhttprequest": "^1.8.0"
   },
   "description": "",
