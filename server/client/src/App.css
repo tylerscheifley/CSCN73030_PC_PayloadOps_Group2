@@ -51,13 +51,11 @@ td {
 }
 
 .Images {
-  flex-direction: row;
-  justify-content: space-between;
+  position: relative;
 }
 
 .ImageDesc {
   color: white;
-  padding-top: 2%;
 }
 
 .ButtonLayoutCol {

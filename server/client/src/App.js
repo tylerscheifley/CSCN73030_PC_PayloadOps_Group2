@@ -117,7 +117,7 @@ function App() {
 
       <div className="Images">
         
-        <img style={{ paddingLeft: 30, paddingRight: 30, paddingTop: 30}} src={img} className="App-logo" alt="satimg" width={800} height={500}/>
+        <img style={{ paddingLeft: 30, paddingTop: 30}} src={img} className="App-logo" alt="satimg" width={700} height={400}/>
         
       </div> 
 
