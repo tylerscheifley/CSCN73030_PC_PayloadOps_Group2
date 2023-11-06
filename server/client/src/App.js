@@ -11,29 +11,6 @@ const data = [
   { time: "10:34:11-2023-10-18", coordinates: "41.40338, 2.17403", imageID: "I3" },
 ]
 
-function MyButton() {
-  return (
-    <button className="Button">I'm a button 1</button>
-  );
-}
-
-function MyButton1() {
-  return (
-    <button className="Button">I'm a button 2</button>
-  );
-}
-
-function MyButton2() {
-  return (
-    <button className="Button">I'm a button 3</button>
-  );
-}
-
-function MyButton3() {
-  return (
-    <button className="Button">I'm a button 4</button>
-  );
-}
 
 function Model(props) {
   const { scene } = useGLTF("/source.glb");
@@ -69,43 +46,26 @@ function App() {
 
 
       
-      <div className="HorizontalLayout">
 
-        <div className="ButtonLayoutCol">
-          <div className="ButtonLayoutRow">
-
-          <MyButton />
-          <MyButton1 />
-
-          </div>
-          <div className="ButtonLayoutRow">
-
-          <MyButton2 />
-          <MyButton3 />
-
-          </div>
-        </div>
-
-        <div className="Table">
-            <table>
-              <tr>
-                  <th>Image ID</th>
-                  <th>Time</th>
-                  <th>Coordinates</th>
-              </tr>
-              {data.map((val, key) => {
-                  return (
-                      <tr key={key}>
-                          <td>{val.imageID}</td>
-                          <td>{val.time}</td>
-                          <td>{val.coordinates}</td>
-                      </tr>
-                  )
-              })}
-            </table>
-        </div>
-
+      <div className="Table">
+          <table>
+            <tr>
+                <th>Image ID</th>
+                <th>Time</th>
+                <th>Coordinates</th>
+            </tr>
+            {data.map((val, key) => {
+                return (
+                    <tr key={key}>
+                        <td>{val.imageID}</td>
+                        <td>{val.time}</td>
+                        <td>{val.coordinates}</td>
+                    </tr>
+                )
+            })}
+          </table>
       </div>
+
 
       <div className="ImageDesc">
 
@@ -131,7 +91,6 @@ function App() {
 
       <form>
         <div className="input-group">
-          <label htmlFor="request">request</label>
           <input className="textbox" type="text" id="request" Insert html/>
           <button type="submit" className="submit-btn">
             Submit

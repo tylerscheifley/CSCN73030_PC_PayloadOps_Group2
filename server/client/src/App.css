@@ -48,10 +48,8 @@ td {
 .Table {
   padding-right: 20px;
   padding-top: 10px;
-}
-
-.Images {
   position: relative;
+  padding-top: 3%;
 }
 
 .ImageDesc {
@@ -108,5 +106,6 @@ td {
 
 .input-group{
   padding-bottom: 50px;
+  padding-left: 30px;
   position: relative;
 }
