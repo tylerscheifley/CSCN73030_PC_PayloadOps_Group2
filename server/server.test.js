@@ -5,11 +5,11 @@ const fs = require("fs").promises;
 describe("GET /GroundStationPayload", () => {
   it("Test a proper payload request with Ground Station Payload Server Mock should return a 200 OK", async () => {
     const response = await request(server).get(
-      "/GroundStationPayload?Longitude=-80.520409&Latitude=43.464256&NumberOfImages=1"
+      "/GroundStationPayload?ID=20231105_000000&NumberOfImages=1&Longitude=-80.520409&Latitude=43.464256"
     );
     expect(response.statusCode).toBe(200);
     expect(response.body.message).toEqual(
-      "200 OK, Received the request for 1 NumberOfImages at Longitude -80.520409 and Latitude 43.464256"
+      "200 OK, Received the request 20231105_000000 for 1 NumberOfImages at Longitude -80.520409 and Latitude 43.464256"
     );
   });
 });
@@ -46,4 +46,13 @@ describe("POST /payloadimage", () => {
   });
 });
 
+describe("POST /Status", () => {
+  it("BEB04- After a Request is sent we should receive a status from ground station payload", async () => {
+    const response = await request(server).post(
+      "/Status?ID=20231105_000000&Status=0"
+    );
+
+    expect(response.statusCode).toBe(200);
+  });
+});
 server.close();
