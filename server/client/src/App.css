@@ -11,6 +11,14 @@
   background-color: #2e3035;
 }
 
+.canvas-container {
+  position: absolute;
+  width: 60%; 
+  height: 90%; 
+  padding-top: 4%;
+  padding-left: 40%;
+}
+
 body {
   background-color: #030303;
 }
@@ -49,6 +57,7 @@ td {
 
 .ImageDesc {
   color: white;
+  padding-top: 2%;
 }
 
 .ButtonLayoutCol {
@@ -64,10 +73,12 @@ td {
 }
 
 .HorizontalLayout{
-  justify-content: center;
+  justify-content: left;
   padding: 30px;
   display: flex;
   gap: 40px;
+  position: relative;
+  padding-top: 3%;
 }
 
 .Button {
@@ -99,4 +110,5 @@ td {
 
 .input-group{
   padding-bottom: 50px;
+  position: relative;
 }
