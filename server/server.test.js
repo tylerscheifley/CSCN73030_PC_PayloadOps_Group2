@@ -55,4 +55,57 @@ describe("POST /Status", () => {
     expect(response.statusCode).toBe(200);
   });
 });
+
+//Post Status with a bad request
+describe("POST /Status with a bad request", () => {
+  it("BEB05- After a Request is sent we should receive a status from ground station payload", async () => {
+    const response = await request(server).post("/Status?ID=20231105_000000");
+
+    expect(response.statusCode).toBe(400);
+  });
+});
+
+//Post Status with a reject by logic
+describe("POST /Status with reject by logic", () => {
+  it("BEB06- After a Request is sent we should receive a status from ground station payload", async () => {
+    const response = await request(server).post(
+      "/Status?ID=20231105_000000&Status=1"
+    );
+
+    expect(response.statusCode).toBe(200);
+  });
+});
+
+//Post Status with a reject by structure
+describe("POST /Status with a reject by structure", () => {
+  it("BEB07- After a Request is sent we should receive a status from ground station payload", async () => {
+    const response = await request(server).post(
+      "/Status?ID=20231105_000000&Status=2"
+    );
+
+    expect(response.statusCode).toBe(200);
+  });
+});
+
+//Post Status with an Lost Status
+describe("POST /Status with a Lost request", () => {
+  it("BEB08- After a Request is sent we should receive a status from ground station payload", async () => {
+    const response = await request(server).post(
+      "/Status?ID=20231105_000000&Status=3"
+    );
+
+    expect(response.statusCode).toBe(200);
+  });
+});
+
+//Post Status with an unknown Status using the default switch case
+describe("POST /Status with an unknown Status", () => {
+  it("BEB09- After a Request is sent we should receive a status from ground station payload", async () => {
+    const response = await request(server).post(
+      "/Status?ID=20231105_000000&Status=4"
+    );
+
+    expect(response.statusCode).toBe(200);
+  });
+});
 server.close();

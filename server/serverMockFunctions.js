@@ -65,6 +65,9 @@ app.post("/Status", (req, res) => {
           "Rejected because it was lost."
       );
       break;
+    default:
+      console.log("Request ID: " + ID + "\n" + "Status: " + "Unknown");
+      break;
   }
 
   res.status(200).send({
