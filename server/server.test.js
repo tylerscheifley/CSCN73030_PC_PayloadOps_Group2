@@ -16,6 +16,7 @@ describe("POST /GroundStationPayload", () => {
     // Make sure server is an instance of your express app
     await request(server)
       .post("/GroundStationPayload")
+      .set("Content-Type", "application/json")
       .send(json) // supertest will set the Content-Type to application/json for you
       .expect(200) // supertest's expect functions can check the status code
       .then((response) => {
@@ -38,6 +39,7 @@ describe("POST /GroundStationPayload", () => {
     // Make sure server is an instance of your express app
     await request(server)
       .post("/GroundStationPayload")
+      .set("Content-Type", "application/json")
       .send(json) // supertest will set the Content-Type to application/json for you
       .expect(400) // supertest's expect functions can check the status code
       .then((response) => {
@@ -85,6 +87,7 @@ describe("POST /Status", () => {
     // Make sure server is an instance of your express app
     await request(server)
       .post("/Status")
+      .set("Content-Type", "application/json")
       .send(json) // supertest will set the Content-Type to application/json for you
       .expect(200) // supertest's expect functions can check the status code
       .then((response) => {
@@ -106,6 +109,7 @@ describe("POST /Status with a bad request", () => {
     // Make sure server is an instance of your express app
     await request(server)
       .post("/Status")
+      .set("Content-Type", "application/json")
       .send(json) // supertest will set the Content-Type to application/json for you
       .expect(400) // supertest's expect functions can check the status code
       .then((response) => {
@@ -132,6 +136,7 @@ describe("POST /Status with reject by logic", () => {
     // Make sure server is an instance of your express app
     await request(server)
       .post("/Status")
+      .set("Content-Type", "application/json")
       .send(json) // supertest will set the Content-Type to application/json for you
       .expect(200) // supertest's expect functions can check the status code
       .then((response) => {
@@ -156,6 +161,7 @@ describe("POST /Status with a reject by structure", () => {
     // Make sure server is an instance of your express app
     await request(server)
       .post("/Status")
+      .set("Content-Type", "application/json")
       .send(json) // supertest will set the Content-Type to application/json for you
       .expect(200) // supertest's expect functions can check the status code
       .then((response) => {
@@ -180,6 +186,7 @@ describe("POST /Status with a Lost request", () => {
     // Make sure server is an instance of your express app
     await request(server)
       .post("/Status")
+      .set("Content-Type", "application/json")
       .send(json) // supertest will set the Content-Type to application/json for you
       .expect(200) // supertest's expect functions can check the status code
       .then((response) => {
@@ -204,6 +211,7 @@ describe("POST /Status with an unknown Status", () => {
     // Make sure server is an instance of your express app
     await request(server)
       .post("/Status")
+      .set("Content-Type", "application/json")
       .send(json) // supertest will set the Content-Type to application/json for you
       .expect(200) // supertest's expect functions can check the status code
       .then((response) => {
