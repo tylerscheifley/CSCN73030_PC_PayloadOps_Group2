@@ -53,27 +53,51 @@ describe("POST /GroundStationPayload", () => {
   });
 });
 
+//Outdated unit test, new implementation of payloadimage route created in sprint 2
+
+// describe("POST /payloadimage", () => {
+//   it("BEB03- should return binary image data with response code 200", async () => {
+//     const response = await request(server).post("/payloadimage");
+//     var imagePath = "../server/testimagerecieved.png";
+//     var imagecreated = false;
+
+//     // Write binary data to the image file and wait for the operation to complete
+//     try {
+//       await fs.writeFile(imagePath, response.body);
+//       console.log("Image file has been successfully created");
+
+//       await fs.access(imagePath, fs.constants.F_OK);
+//       console.log("File exists");
+//       imagecreated = true;
+//     } catch (err) {
+//       console.error("Error writing or checking image file:", err);
+//     }
+
+//     expect(imagecreated).toEqual(true);
+//   });
+// });
+// POST PayloadImage, null data being sent
 describe("POST /payloadimage", () => {
-  it("BEB03- should return binary image data with response code 200", async () => {
-    const response = await request(server).post("/payloadimage");
-    var imagePath = "../server/testimagerecieved.png";
-    var imagecreated = false;
+  it("BEB03- Send Invalid request with no image data, expect 400 response", async () => {
+    //ID is used to set the name of the image since its unique
+    const json = {
+      ID: "20231106_000000",
+      Data: null,
 
-    // Write binary data to the image file and wait for the operation to complete
-    try {
-      await fs.writeFile(imagePath, response.body);
-      console.log("Image file has been successfully created");
-
-      await fs.access(imagePath, fs.constants.F_OK);
-      console.log("File exists");
-      imagecreated = true;
-    } catch (err) {
-      console.error("Error writing or checking image file:", err);
-    }
-
-    expect(imagecreated).toEqual(true);
+    };
+    
+    await request(server)
+      .post("/payloadimage")
+      .send(json)
+      //Expected 400, if 500 status code, the Data isn't null and proceeded to the writing of the image data
+      .expect(400) 
+      .then((response) => {
+        expect(response.body.message).toEqual("Bad request. Image data is required.");
+      });
   });
+
 });
+
 
 describe("POST /Status", () => {
   it("BEB04- After a Request is sent we should receive a status from ground station payload", async () => {
@@ -215,5 +239,40 @@ describe("POST /Status with an unknown Status", () => {
         console.error(`Error: ${err.message}`);
       });
   });
+});
+
+// POST PayloadImage valid image being sent
+describe("Post /payloadimage", () => {
+  it("BEB10- Send valid testing image and receive 200 OK response code", async () => {
+    const imagePath = "../server/TestingImage.png";
+    //Need to convert binary data to base64 for server to write correctly
+    const imageData = await fs.readFile(imagePath, 'binary');
+    const base64ImageData = Buffer.from(imageData, 'binary').toString('base64'); // Read the image file asynchronously
+    //Json packet creation
+    const json = {
+      ID: "20231106_000000",
+      Data: base64ImageData,
+
+    };
+
+    await request(server)
+      .post("/payloadimage")
+      .send(json) 
+      //Checking for 200 OK and Correct response message
+      .expect(200) 
+      .then((response) => {
+        expect(response.body.message).toEqual("Recieved the image data"); 
+      })
+      .catch((err) => {
+        console.error(`Error: ${err.message}`);
+      });
+  });
+});
+
+//Cleanup function, runs once all tests have completed
+afterAll(async () => {
+  const imagePath = '../server/20231106_000000_Image.png';
+  // Delete the image file after the test
+  await fs.unlink(imagePath); 
 });
 server.close();

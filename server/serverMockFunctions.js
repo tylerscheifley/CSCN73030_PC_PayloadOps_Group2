@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const fs = require("fs");
 const port = 3000;
+app.use(express.json());
 
 app.post("/GroundStationPayload", (req, res) => {
   const ID = req.body.ID;
@@ -22,19 +23,58 @@ app.post("/GroundStationPayload", (req, res) => {
   });
 });
 
-app.post("/payloadimage", function (req, res) {
-  var imagePath = "../server/TestingImage.png";
+// app.post("/payloadimage", function (req, res) {
+//   var imagePath = "../server/TestingImage.png";
 
-  fs.readFile(imagePath, (err, data) => {
+//   fs.readFile(imagePath, (err, data) => {
+//     if (err) {
+//       res.status(500).send("There was an error reading the image");
+//     } else {
+//       res.setHeader("Content-Type", "image/jpeg");
+//       res.status(200).send(data);
+//       console.log(data);
+//     }
+//   });
+// });
+
+//Updated POST payloadimage
+app.post("/payloadimage", function (req, res) {
+  const ImageData = req.body.Data;
+  const ID = req.body.ID;
+  //Unique name generated
+  var imagePath = `../server/${ID}_Image.png`;
+  
+  //First checking to ensure image data isn't null
+  if(!ImageData) 
+  {
+    console.log("No image data sent");
+    return res.status(400).send({
+      message: "Bad request. Image data is required.",
+    });
+  }
+  //Convert ImageData binary data to base64
+  var imageBuffer = Buffer.from(ImageData, 'base64');
+
+  fs.writeFile(imagePath, imageBuffer, (err) => {
     if (err) {
-      res.status(500).send("There was an error reading the image");
+      //Error 500 is an internal server error writing to a file
+      console.error("Error writing the image:", err);
+      res.status(500).send("There was an error writing the image");
     } else {
-      res.setHeader("Content-Type", "image/jpeg");
-      res.status(200).send(data);
-      console.log(data);
+      console.log('Image: ', ID, ' Sucessfully created');
+      //200 OK upon the creation of the image
+      res.status(200).send({
+        message: "Recieved the image data",
+      })
     }
   });
+
+  //Insert Saving image to database functionality below 
+
 });
+
+
+
 
 app.post("/Status", (req, res) => {
   //json object with a status and id
