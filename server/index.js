@@ -14,8 +14,39 @@ app.get("/", (req, res) => {
 });
 
 //Get Image from payload
-app.get("/ImagePayloadRequest", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "sclient", "build", "index.html"));
+app.post("/payloadimage", function (req, res) {
+  const ImageData = req.body.Data;
+  const ID = req.body.ID;
+  //Unique name generated
+  var imagePath = `../server/${ID}_Image.png`;
+  
+  //First checking to ensure image data isn't null
+  if(!ImageData) 
+  {
+    console.log("No image data sent");
+    return res.status(400).send({
+      message: "Bad request. Image data is required.",
+    });
+  }
+  //Convert ImageData binary data to base64
+  var imageBuffer = Buffer.from(ImageData, 'base64');
+
+  fs.writeFile(imagePath, imageBuffer, (err) => {
+    if (err) {
+      //Error 500 is an internal server error writing to a file
+      console.error("Error writing the image:", err);
+      res.status(500).send("There was an error writing the image");
+    } else {
+      console.log('Image: ', ID, ' Sucessfully created');
+      //200 OK upon the creation of the image
+      res.status(200).send({
+        message: "Recieved the image data",
+      })
+    }
+  });
+
+  //Insert Saving image to database functionality below 
+
 });
 
 app.post("/Status", (req, res) => {
