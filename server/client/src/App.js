@@ -32,52 +32,53 @@ function App() {
       <div className="canvas-container">
           <Canvas dpr={[1, 2]} shadows camera={{ fov: 45 }}>
             <color attach="background" args={["#000000"]} />
-            <PresentationControls speed={1.5} global zoom={0.5} polar={[-0.1, Math.PI / 4]}>
+            <PresentationControls speed={1.5} polar={[-0.1, Math.PI / 4]}>
               <Stage environment={"sunset"}>
-                <Model scale={0.01} />
+                <Model scale={2} />
                 <OrbitControls autoRotate autoRotateSpeed={1.0} enableZoom={false} />
               </Stage>
             </PresentationControls>
           </Canvas>
         </div>
 
-      <div className="Table">
-          <table>
-            <tr>
-                <th>Image ID</th>
-                <th>Time</th>
-                <th>Coordinates</th>
-            </tr>
-            {data.map((val, key) => {
-                return (
-                    <tr key={key}>
-                        <td>{val.imageID}</td>
-                        <td>{val.time}</td>
-                        <td>{val.coordinates}</td>
-                    </tr>
-                )
-            })}
-          </table>
+      <div className="Table-Spacing">
+        <div className="Table">
+            <table>
+              <tr>
+                  <th>Image ID</th>
+                  <th>Time</th>
+                  <th>Coordinates</th>
+              </tr>
+              {data.map((val, key) => {
+                  return (
+                      <tr key={key}>
+                          <td>{val.imageID}</td>
+                          <td>{val.time}</td>
+                          <td>{val.coordinates}</td>
+                      </tr>
+                  )
+              })}
+            </table>
+        </div>
       </div>
-
 
       <div className="ImageDesc">
 
-        <p style={{ padding: 30}}>
-        📷 Waiting for satellite imagery...
-        </p>
-          
+      <p>
+      📷 Waiting for satellite imagery...
+      </p>
+        
       </div>
 
       <div className="Images">
-        
-        <img style={{ paddingLeft: 30, paddingTop: 30}} src={img} className="App-logo" alt="satimg" width={700} height={400}/>
-        
+
+      <img src={img} className="App-logo" alt="satimg"/>
+
       </div> 
 
       <div className="ImageDesc">
 
-        <p style={{ padding: 30}}>
+        <p>
         📋Submit a script...
         </p>
         
@@ -86,11 +87,20 @@ function App() {
       <form>
         <div className="input-group">
           <input className="textbox" type="text" id="request" Insert html/>
+        </div>
+      </form>
+
+      <form>
+        <div className="input-group">
+          <input className="textbox" type="text" id="request" Insert html/>
+        </div>
+      </form>
+
+      <div className="buttonLayout">
           <button type="submit" className="submit-btn">
             Submit
           </button>
-        </div>
-      </form>
+      </div>
 
     </div>
 

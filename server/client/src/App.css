@@ -20,13 +20,17 @@
 }
 
 body {
-  background-color: #030303;
+  background-color: #000000;
 }
 
 table {
-  border: 2px solid #4f90aa;
-  width: 800px;
-  height: 200px;
+  border: 1px solid #4f90aa;
+  width: 50%;
+  height: 18%;
+}
+
+.Table-Spacing {
+  padding-left: 2%;
 }
 
 th {
@@ -54,6 +58,7 @@ td {
 
 .ImageDesc {
   color: white;
+  padding: 2%;
 }
 
 .ButtonLayoutCol {
@@ -68,15 +73,6 @@ td {
   gap: 30px;
 }
 
-.HorizontalLayout{
-  justify-content: left;
-  padding: 30px;
-  display: flex;
-  gap: 40px;
-  position: relative;
-  padding-top: 3%;
-}
-
 .Button {
   padding: 20px;
   background-color: #4f90aa;
@@ -88,16 +84,16 @@ td {
 .textbox{
   padding: 30px;
   border: 2px solid #4f90aa;
-  width: 60%;
-  height: 50px;
+  width: 50%;
+  height: 10%;
   border-radius: 5px;
 }
 
 .submit-btn{
   padding-left: 30px;
   padding-right: 35px;
-  padding-top: 50px;
-  padding-bottom: 50px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   background-color: #4f90aa;
   border-radius: 5px;
   border: 2px solid #4f90aa;
@@ -105,11 +101,19 @@ td {
 }
 
 .input-group{
-  padding-bottom: 50px;
-  padding-left: 30px;
+  padding-bottom: 1%;
+  padding-left: 2%;
   position: relative;
 }
 
 .buttonLayout{
-  padding-left: 30px;
+  padding-left: 2%;
+}
+
+.Images{
+  padding-left: 2%;
+}
+
+.App-logo{
+  width: 38%;
 }
