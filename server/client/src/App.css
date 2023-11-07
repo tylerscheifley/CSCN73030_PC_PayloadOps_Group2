@@ -88,16 +88,16 @@ td {
 .textbox{
   padding: 30px;
   border: 2px solid #4f90aa;
-  width: 83%;
-  height: 100px;
+  width: 60%;
+  height: 50px;
   border-radius: 5px;
 }
 
 .submit-btn{
-  padding-left: 3px;
-  padding-right: 3px;
-  padding-top: 63px;
-  padding-bottom: 67px;
+  padding-left: 30px;
+  padding-right: 35px;
+  padding-top: 50px;
+  padding-bottom: 50px;
   background-color: #4f90aa;
   border-radius: 5px;
   border: 2px solid #4f90aa;
@@ -108,4 +108,8 @@ td {
   padding-bottom: 50px;
   padding-left: 30px;
   position: relative;
+}
+
+.buttonLayout{
+  padding-left: 30px;
 }

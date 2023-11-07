@@ -92,11 +92,25 @@ function App() {
       <form>
         <div className="input-group">
           <input className="textbox" type="text" id="request" Insert html/>
-          <button type="submit" className="submit-btn">
-            Submit
-          </button>
         </div>
       </form>
+
+      <form>
+        <div className="input-group">
+          <input className="textbox" type="text" id="request" Insert html/>
+        </div>
+      </form>
+
+      
+   <div className="buttonLayout">
+      <button type="submit" className="submit-btn">
+        Submit
+      </button>
+   </div>
+     
+
+
+
 
     </div>
 
