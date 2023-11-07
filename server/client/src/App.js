@@ -2,8 +2,7 @@ import img from "./satellite.jpg";
 import "./App.css";
 import React from "react";
 import { Canvas } from "@react-three/fiber";
-import { useGLTF, Stage, PresentationControls } from "@react-three/drei";
-import { OrbitControls } from '@react-three/drei';
+import { useGLTF, Stage, PresentationControls, OrbitControls } from "@react-three/drei";
 
 const data = [
   { time: "10:22:01-2023-10-18", coordinates:  "41.40338, 2.17403", imageID: "I1" },
@@ -11,12 +10,10 @@ const data = [
   { time: "10:34:11-2023-10-18", coordinates: "41.40338, 2.17403", imageID: "I3" },
 ]
 
-
 function Model(props) {
   const { scene } = useGLTF("/source.glb");
   return <primitive object={scene} {...props} />
 }
-
 
 function App() {
   return (
@@ -43,9 +40,6 @@ function App() {
             </PresentationControls>
           </Canvas>
         </div>
-
-
-      
 
       <div className="Table">
           <table>
@@ -92,25 +86,11 @@ function App() {
       <form>
         <div className="input-group">
           <input className="textbox" type="text" id="request" Insert html/>
+          <button type="submit" className="submit-btn">
+            Submit
+          </button>
         </div>
       </form>
-
-      <form>
-        <div className="input-group">
-          <input className="textbox" type="text" id="request" Insert html/>
-        </div>
-      </form>
-
-      
-   <div className="buttonLayout">
-      <button type="submit" className="submit-btn">
-        Submit
-      </button>
-   </div>
-     
-
-
-
 
     </div>
 
