@@ -1,8 +1,10 @@
 import img from "./satellite.jpg";
 import "./App.css";
-import React from "react";
+import React, {useState} from "react";
 import { Canvas } from "@react-three/fiber";
 import { useGLTF, Stage, PresentationControls, OrbitControls } from "@react-three/drei";
+import { LatheGeometry } from "three";
+
 
 const data = [
   { time: "10:22:01-2023-10-18", coordinates:  "41.40338, 2.17403", imageID: "I1" },
@@ -14,12 +16,22 @@ function Model(props) {
   const { scene } = useGLTF("/source.glb");
   return <primitive object={scene} {...props} />
 }
-
 function App() {
+  const getData = event => {
+    event.preventDefault();
+    alert('You have submitted \nLatitude: ' + latitude + '\nLongitude: ' + longitude)
+  }
+  const [latitude, setVal] = useState("");
+const [longitude, setVal2] = useState("");
+const change1 = event => {
+  setVal(event.target.value)
+}
+const change2 = event => {
+  setVal2(event.target.value)
+}
   return (
     
     <div className="App">
-     
       <header className="App-header">
 
         <h1 style={{  paddingLeft: 30}}>PC-Payload Ops</h1>
@@ -82,25 +94,22 @@ function App() {
         📋Submit a script...
         </p>
         
-      </div>
-
-      <form>
+      </div>  
+      <form onSubmit={getData}>
         <div className="input-group">
-          <input className="textbox" type="text" id="request" Insert html/>
+          <input onChange={change1}className="textbox" type="text" id="request1" Insert html/>
         </div>
-      </form>
 
-      <form>
         <div className="input-group">
-          <input className="textbox" type="text" id="request" Insert html/>
+          <input onChange={change2}className="textbox" type="text" id="request1" Insert html/>
         </div>
-      </form>
 
       <div className="buttonLayout">
           <button type="submit" className="submit-btn">
             Submit
           </button>
       </div>
+      </form>
 
     </div>
 
