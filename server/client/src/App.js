@@ -98,11 +98,11 @@ function App() {
 
       <form onSubmit={getData}>
         <div className="input-group">
-          <input onChange={change1}className="textbox" type="text" id="request1" Insert html/>
+          <input onChange={change1}className="textbox" type="text" id="request1" data-testid="latitude-input" Insert html/>
         </div>
 
         <div className="input-group">
-          <input onChange={change2}className="textbox" type="text" id="request1" Insert html/>
+          <input onChange={change2}className="textbox" type="text" id="request1" data-testid="longitude-input" Insert html/>
         </div>
 
         <div className="buttonLayout">
