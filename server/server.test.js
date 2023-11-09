@@ -3,6 +3,7 @@ const server = require("../server/serverMockFunctions");
 const exp = require("constants");
 const fs = require("fs").promises;
 const XMLHttpRequest = require("xhr2");
+const { default: mongoose } = require("mongoose");
 
 describe("POST /GroundStationPayload", () => {
   it("BEB01- Test a proper payload request with Ground Station Payload Server Mock should return a 200 OK", async () => {
@@ -277,10 +278,38 @@ describe("Post /payloadimage", () => {
   });
 });
 
+
+describe("Post /savecommand", () => {
+  it("BEB11- Save valid command: longitude and latitude with return status 200 OK", async () => {
+    
+    const json = {
+      longitude: 123.456,
+      latitude: 789.100
+    };
+
+    await request(server)
+      .post("/savecommand")
+      .send(json) 
+      //Checking for 200 OK and Correct response message
+      .expect(200) 
+      .then((response) => {
+        expect(response.body.message).toEqual("Command successfully saved to the database"); 
+      })
+      .catch((err) => {
+        console.error(`Error: ${err.message}`);
+      });
+      
+  });
+});
+
 //Cleanup function, runs once all tests have completed
 afterAll(async () => {
   const imagePath = '../server/20231106_000000_Image.png';
   // Delete the image file after the test
   await fs.unlink(imagePath); 
+  await server.close();
+  await mongoose.disconnect();
 });
-server.close();
+
+
+
