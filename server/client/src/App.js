@@ -1,4 +1,4 @@
-import img from "./satellite.jpg";
+import img from "./Satellite image.jpg";
 import "./App.css";
 import React, {useState} from "react";
 import { Canvas } from "@react-three/fiber";
@@ -16,29 +16,35 @@ function Model(props) {
   const { scene } = useGLTF("/source.glb");
   return <primitive object={scene} {...props} />
 }
+
 function App() {
   const getData = event => {
     event.preventDefault();
     alert('You have submitted \nLatitude: ' + latitude + '\nLongitude: ' + longitude)
   }
   const [latitude, setVal] = useState("");
-const [longitude, setVal2] = useState("");
-const change1 = event => {
-  setVal(event.target.value)
-}
-const change2 = event => {
-  setVal2(event.target.value)
-}
+  const [longitude, setVal2] = useState("");
+  
+  const change1 = event => {
+    setVal(event.target.value)
+  }
+  
+  const change2 = event => {
+    setVal2(event.target.value)
+  }
+
+  const change3 = event => {
+    //waiting database 
+  }
+
   return (
     
     <div className="App">
       <header className="App-header">
-
         <h1 style={{  paddingLeft: 30}}>PC-Payload Ops</h1>
         <p style={{ padding: 30}}>
         Waterloo Ontario🍁
         </p>
-         
       </header>
 
       <div className="canvas-container">
@@ -75,26 +81,21 @@ const change2 = event => {
       </div>
 
       <div className="ImageDesc">
-
-      <p>
-      📷 Waiting for satellite imagery...
-      </p>
-        
+        <p>
+        📷 Satellite imagery...
+        </p>       
       </div>
 
       <div className="Images">
-
-      <img src={img} className="App-logo" alt="satimg"/>
-
+        <img src={img} className="App-logo" alt="satimg"/>
       </div> 
 
       <div className="ImageDesc">
-
         <p>
         📋Submit a script...
         </p>
-        
       </div>  
+
       <form onSubmit={getData}>
         <div className="input-group">
           <input onChange={change1}className="textbox" type="text" id="request1" Insert html/>
@@ -104,11 +105,33 @@ const change2 = event => {
           <input onChange={change2}className="textbox" type="text" id="request1" Insert html/>
         </div>
 
-      <div className="buttonLayout">
+        <div className="buttonLayout">
           <button type="submit" className="submit-btn">
             Submit
           </button>
-      </div>
+        </div>
+      </form>
+
+      <div className="ImageDesc">
+        <p>
+        📄
+        Request an image from the database...
+        </p>
+        <p>
+        Enter the image id below:
+        </p>
+      </div> 
+
+      <form onSubmit={getData}>
+        <div className="input-group">
+          <input onChange={change3}className="textbox" type="text" id="request1" Insert html/>
+        </div>
+
+        <div className="buttonLayout">
+          <button type="submit" className="submit-btn">
+            Load Image
+          </button>
+        </div>
       </form>
 
     </div>
