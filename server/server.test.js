@@ -3,6 +3,7 @@ const server = require("../server/serverMockFunctions");
 const exp = require("constants");
 const fs = require("fs").promises;
 const XMLHttpRequest = require("xhr2");
+import { generateRequestID } from "./ServerFunctions";
 
 describe("POST /GroundStationPayload", () => {
   it("BEB01- Test a proper payload request with Ground Station Payload Server Mock should return a 200 OK", async () => {
@@ -222,6 +223,25 @@ describe("POST /Status with an unknown Status", () => {
         // If there's an error in the request, it will be caught here
         console.error(`Error: ${err.message}`);
       });
+  });
+});
+
+describe("Test the request ID generation", () => {
+  it("BEB10- The ID should be generated using the function and match the expected", () => {
+    var actual = generateRequestID();
+
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = String(date.getMonth() + 1).padStart(2, "0");
+    var day = String(date.getDate()).padStart(2, "0");
+    var hour = String(date.getHours()).padStart(2, "0");
+    var minute = String(date.getMinutes()).padStart(2, "0");
+    var seconds = String(date.getSeconds()).padStart(2, "0");
+    var ID =
+      year + "" + month + "" + day + "_" + hour + "" + minute + "" + seconds;
+
+    console.log("Actual: " + actual + "\n" + "Expected: " + ID);
+    expect(actual).toEqual(ID);
   });
 });
 server.close();
