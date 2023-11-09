@@ -1,5 +1,8 @@
-import { getAllByText, queryAllByText, render, screen } from '@testing-library/react';
+import '@testing-library/user-event';
+import { getAllByText, queryAllByText, render, screen, fireEvent } from '@testing-library/react';
 import App from './App';
+import userEvent from '@testing-library/user-event';
+import { act } from 'react-dom/test-utils';  // Import act
 
 //The 3d globe cannot be regression tested in this suite as these are too complex to test (they must be tested manually)
 
@@ -68,4 +71,36 @@ test("Checking text waiting for ID", () => {
   const { getByText } = render(<h1 style={{  paddingLeft: 30}}>PC-Payload Ops</h1>);
   const PayloadElement = getByText(/I1/i);
   expect(PayloadElement).toBeInTheDocument();
+  });
+
+  test('button click should trigger getData function', () => {
+    // Create a jest mock function
+    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
+  
+    // Render the component
+    render(<App />);
+  
+    // Get input elements using data-testid
+    const latitudeInput = screen.getByTestId('latitude-input');
+    const longitudeInput = screen.getByTestId('longitude-input');
+  
+    // Simulate user input
+    act(() => {
+      fireEvent.change(latitudeInput, { target: { value: '41.40338' } });
+      fireEvent.change(longitudeInput, { target: { value: '2.17403' } });
+    });
+  
+    // Get and click the submit button
+    const submitButton = screen.getByText('Submit');
+    act(() => {
+      fireEvent.click(submitButton);
+    });
+  
+    // You can add assertions based on your specific requirements
+    // For example, you might want to check if the alert message is displayed.
+    const expectedAlertMessage = 'You have submitted \nLatitude: 41.40338\nLongitude: 2.17403';
+    expect(alertMock).toHaveBeenCalledWith(expectedAlertMessage);
+  
+    // Clean up the mock after the test
+    alertMock.mockRestore();
   });
