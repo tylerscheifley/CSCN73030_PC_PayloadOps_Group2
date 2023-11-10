@@ -3,6 +3,7 @@ const server = require("../server/serverMockFunctions");
 const exp = require("constants");
 const fs = require("fs").promises;
 const XMLHttpRequest = require("xhr2");
+import { generateRequestID } from "./ServerFunctions";
 const { default: mongoose } = require("mongoose");
 
 describe("POST /GroundStationPayload", () => {
@@ -86,21 +87,20 @@ describe("POST /payloadimage", () => {
     const json = {
       ID: "20231106_000000",
       Data: null,
-
     };
-    
+
     await request(server)
       .post("/payloadimage")
       .send(json)
       //Expected 400, if 500 status code, the Data isn't null and proceeded to the writing of the image data
-      .expect(400) 
+      .expect(400)
       .then((response) => {
-        expect(response.body.message).toEqual("Bad request. Image data is required.");
+        expect(response.body.message).toEqual(
+          "Bad request. Image data is required."
+        );
       });
   });
-
 });
-
 
 describe("POST /Status", () => {
   it("BEB04- After a Request is sent we should receive a status from ground station payload", async () => {
@@ -250,27 +250,45 @@ describe("POST /Status with an unknown Status", () => {
   });
 });
 
+describe("Test the request ID generation", () => {
+  it("BEB10- The ID should be generated using the function and match the expected", () => {
+    var actual = generateRequestID();
+
+    var date = new Date();
+    var year = date.getFullYear();
+    var month = String(date.getMonth() + 1).padStart(2, "0");
+    var day = String(date.getDate()).padStart(2, "0");
+    var hour = String(date.getHours()).padStart(2, "0");
+    var minute = String(date.getMinutes()).padStart(2, "0");
+    var seconds = String(date.getSeconds()).padStart(2, "0");
+    var ID =
+      year + "" + month + "" + day + "_" + hour + "" + minute + "" + seconds;
+
+    console.log("Actual: " + actual + "\n" + "Expected: " + ID);
+    expect(actual).toEqual(ID);
+  });
+});
+server.close();
 // POST PayloadImage valid image being sent
 describe("Post /payloadimage", () => {
   it("BEB10- Send valid testing image and receive 200 OK response code", async () => {
     const imagePath = "../server/TestingImage.png";
     //Need to convert binary data to base64 for server to write correctly
-    const imageData = await fs.readFile(imagePath, 'binary');
-    const base64ImageData = Buffer.from(imageData, 'binary').toString('base64'); // Read the image file asynchronously
+    const imageData = await fs.readFile(imagePath, "binary");
+    const base64ImageData = Buffer.from(imageData, "binary").toString("base64"); // Read the image file asynchronously
     //Json packet creation
     const json = {
       ID: "20231106_000000",
       Data: base64ImageData,
-
     };
 
     await request(server)
       .post("/payloadimage")
-      .send(json) 
+      .send(json)
       //Checking for 200 OK and Correct response message
-      .expect(200) 
+      .expect(200)
       .then((response) => {
-        expect(response.body.message).toEqual("Recieved the image data"); 
+        expect(response.body.message).toEqual("Recieved the image data");
       })
       .catch((err) => {
         console.error(`Error: ${err.message}`);
@@ -278,27 +296,26 @@ describe("Post /payloadimage", () => {
   });
 });
 
-
 describe("Post /savecommand", () => {
   it("BEB11- Save valid command: longitude and latitude with return status 200 OK", async () => {
-    
     const json = {
       longitude: 123.456,
-      latitude: 789.100
+      latitude: 789.1,
     };
 
     await request(server)
       .post("/savecommand")
-      .send(json) 
+      .send(json)
       //Checking for 200 OK and Correct response message
-      .expect(200) 
+      .expect(200)
       .then((response) => {
-        expect(response.body.message).toEqual("Command successfully saved to the database"); 
+        expect(response.body.message).toEqual(
+          "Command successfully saved to the database"
+        );
       })
       .catch((err) => {
         console.error(`Error: ${err.message}`);
       });
-      
   });
 });
 
@@ -508,6 +525,3 @@ afterAll(async () => {
   await server.close();
   await mongoose.disconnect();
 });
-
-
-
