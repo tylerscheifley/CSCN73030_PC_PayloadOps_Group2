@@ -6,6 +6,7 @@ const XMLHttpRequest = require("xhr2");
 import { generateRequestID } from "./ServerFunctions";
 const { default: mongoose } = require("mongoose");
 
+
 describe("POST /GroundStationPayload", () => {
   it("BEB01- Test a proper payload request with Ground Station Payload Server Mock should return a 200 OK", async () => {
     const json = {
@@ -54,6 +55,7 @@ describe("POST /GroundStationPayload", () => {
         // If there's an error in the request, it will be caught here
         console.error(`Error: ${err.message}`);
       });
+
   });
 });
 
@@ -82,13 +84,13 @@ describe("POST /GroundStationPayload", () => {
 // });
 // POST PayloadImage, null data being sent
 describe("POST /payloadimage", () => {
+
   it("BEB03- Send Invalid request with no image data, expect 400 response", async () => {
     //ID is used to set the name of the image since its unique
     const json = {
       ID: "20231106_000000",
       Data: null,
     };
-
     await request(server)
       .post("/payloadimage")
       .send(json)
