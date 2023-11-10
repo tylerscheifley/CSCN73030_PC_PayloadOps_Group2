@@ -1,3 +1,4 @@
+
 import "@testing-library/user-event";
 import {
   getAllByText,
@@ -30,6 +31,7 @@ jest.mock("@react-three/fiber", () => {
     Canvas: () => null,
   };
 });
+
 
 test("FEB01-Renders Payload Ops Link", () => {
   render(<App />);
@@ -79,6 +81,7 @@ test("FEB07-Checking text waiting for ID", () => {
   expect(PayloadElement).toBeInTheDocument();
 });
 
+
 test("button click should trigger getData function", () => {
   // Create a jest mock function
   const alertMock = jest.spyOn(window, "alert").mockImplementation(() => {});
@@ -111,3 +114,4 @@ test("button click should trigger getData function", () => {
   // Clean up the mock after the test
   alertMock.mockRestore();
 });
+
