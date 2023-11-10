@@ -1,6 +1,9 @@
-import logo from "./Earth.gif";
-import img from "./satellite.jpg";
+import img from "./Satellite image.jpg";
 import "./App.css";
+import React, {useState} from "react";
+import { Canvas } from "@react-three/fiber";
+import { useGLTF, Stage, PresentationControls, OrbitControls } from "@react-three/drei";
+import { LatheGeometry } from "three";
 
 
 const data = [
@@ -9,76 +12,54 @@ const data = [
   { time: "10:34:11-2023-10-18", coordinates: "41.40338, 2.17403", imageID: "I3" },
 ]
 
-function MyButton() {
-  return (
-    <button className="Button">I'm a button 1</button>
-  );
-}
-
-function MyButton1() {
-  return (
-    <button className="Button">I'm a button 2</button>
-  );
-}
-
-function MyButton2() {
-  return (
-    <button className="Button">I'm a button 3</button>
-  );
-}
-
-function MyButton3() {
-  return (
-    <button className="Button">I'm a button 4</button>
-  );
+function Model(props) {
+  const { scene } = useGLTF("/source.glb");
+  return <primitive object={scene} {...props} />
 }
 
 function App() {
-  return (
-    <div className="App">
-     
-      <header className="App-header">
+  const getData = event => {
+    event.preventDefault();
+    alert('You have submitted \nLatitude: ' + latitude + '\nLongitude: ' + longitude)
+  }
+  const [latitude, setVal] = useState("");
+  const [longitude, setVal2] = useState("");
+  
+  const change1 = event => {
+    setVal(event.target.value)
+  }
+  
+  const change2 = event => {
+    setVal2(event.target.value)
+  }
 
+  const change3 = event => {
+    //waiting database 
+  }
+
+  return (
+    
+    <div className="App">
+      <header className="App-header">
         <h1 style={{  paddingLeft: 30}}>PC-Payload Ops</h1>
         <p style={{ padding: 30}}>
         Waterloo Ontario🍁
         </p>
-         
       </header>
 
-      <div className="Images">
-        
-        <img style={{ paddingLeft: 30, paddingRight: 30}} src={img} className="App-logo" alt="satimg" width={800} height={500}/>
-
-        <img style={{ padding: 30}} src={logo} className="App-logo" alt="logo" width={500} height={500}/>
-
-      </div> 
-
-      <div className="ImageDesc">
-
-        <p style={{ padding: 30}}>
-        📷 Waiting for satellite imagery...
-        </p>
-          
-      </div>
-      
-      <div className="HorizontalLayout">
-
-        <div className="ButtonLayoutCol">
-          <div className="ButtonLayoutRow">
-
-          <MyButton />
-          <MyButton1 />
-
-          </div>
-          <div className="ButtonLayoutRow">
-
-          <MyButton2 />
-          <MyButton3 />
-
-          </div>
+      <div className="canvas-container">
+          <Canvas dpr={[1, 2]} shadows camera={{ fov: 45 }}>
+            <color attach="background" args={["#000000"]} />
+            <PresentationControls speed={1.5} polar={[-0.1, Math.PI / 4]}>
+              <Stage environment={"sunset"}>
+                <Model scale={2} />
+                <OrbitControls autoRotate autoRotateSpeed={1.0} enableZoom={false} />
+              </Stage>
+            </PresentationControls>
+          </Canvas>
         </div>
 
+      <div className="Table-Spacing">
         <div className="Table">
             <table>
               <tr>
@@ -97,28 +78,64 @@ function App() {
               })}
             </table>
         </div>
-
       </div>
 
       <div className="ImageDesc">
-
-        <p style={{ padding: 30}}>
-        📋Submit a script...
-        </p>
-        
+        <p>
+        📷 Satellite imagery...
+        </p>       
       </div>
 
-      <form>
+      <div className="Images">
+        <img src={img} className="App-logo" alt="satimg"/>
+      </div> 
+
+      <div className="ImageDesc">
+        <p>
+        📋Submit a script...
+        </p>
+      </div>  
+
+      <form onSubmit={getData}>
         <div className="input-group">
-          <label htmlFor="request">request</label>
-          <input className="textbox" type="text" id="request" Insert html/>
+          <input onChange={change1}className="textbox" type="text" id="request1" data-testid="latitude-input" Insert html/>
+        </div>
+
+        <div className="input-group">
+          <input onChange={change2}className="textbox" type="text" id="request1" data-testid="longitude-input" Insert html/>
+        </div>
+
+        <div className="buttonLayout">
           <button type="submit" className="submit-btn">
             Submit
           </button>
         </div>
       </form>
 
+      <div className="ImageDesc">
+        <p>
+        📄
+        Request an image from the database...
+        </p>
+        <p>
+        Enter the image id below:
+        </p>
+      </div> 
+
+      <form onSubmit={getData}>
+        <div className="input-group">
+          <input onChange={change3}className="textbox" type="text" id="request1" Insert html/>
+        </div>
+
+        <div className="buttonLayout">
+          <button type="submit" className="submit-btn">
+            Load Image
+          </button>
+        </div>
+      </form>
+
     </div>
+
   );
 }
 

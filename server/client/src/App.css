@@ -11,14 +11,26 @@
   background-color: #2e3035;
 }
 
+.canvas-container {
+  position: absolute;
+  width: 60%; 
+  height: 90%; 
+  padding-top: 4%;
+  padding-left: 40%;
+}
+
 body {
-  background-color: #030303;
+  background-color: #000000;
 }
 
 table {
-  border: 2px solid #4f90aa;
-  width: 800px;
-  height: 200px;
+  border: 1px solid #4f90aa;
+  width: 50%;
+  height: 18%;
+}
+
+.Table-Spacing {
+  padding-left: 2%;
 }
 
 th {
@@ -40,15 +52,15 @@ td {
 .Table {
   padding-right: 20px;
   padding-top: 10px;
-}
-
-.Images {
-  flex-direction: row;
-  justify-content: space-between;
+  position: relative;
+  padding-top: 3%;
 }
 
 .ImageDesc {
   color: white;
+  padding-left: 2%;
+  padding-top: 1%;
+  padding-bottom: 0.5%;
 }
 
 .ButtonLayoutCol {
@@ -63,13 +75,6 @@ td {
   gap: 30px;
 }
 
-.HorizontalLayout{
-  justify-content: center;
-  padding: 30px;
-  display: flex;
-  gap: 40px;
-}
-
 .Button {
   padding: 20px;
   background-color: #4f90aa;
@@ -81,16 +86,16 @@ td {
 .textbox{
   padding: 30px;
   border: 2px solid #4f90aa;
-  width: 83%;
-  height: 100px;
+  width: 50%;
+  height: 10%;
   border-radius: 5px;
 }
 
 .submit-btn{
-  padding-left: 3px;
-  padding-right: 3px;
-  padding-top: 63px;
-  padding-bottom: 67px;
+  padding-left: 30px;
+  padding-right: 35px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   background-color: #4f90aa;
   border-radius: 5px;
   border: 2px solid #4f90aa;
@@ -98,5 +103,19 @@ td {
 }
 
 .input-group{
-  padding-bottom: 50px;
+  padding-bottom: 1%;
+  padding-left: 2%;
+  position: relative;
+}
+
+.buttonLayout{
+  padding-left: 2%;
+}
+
+.Images{
+  padding-left: 2%;
+}
+
+.App-logo{
+  width: 38%;
 }
