@@ -79,7 +79,7 @@ function App() {
               <Model scale={2} />
               <OrbitControls
                 autoRotate
-                autoRotateSpeed={1.0}
+                autoRotateSpeed={-1.0}
                 enableZoom={false}
               />
             </Stage>
