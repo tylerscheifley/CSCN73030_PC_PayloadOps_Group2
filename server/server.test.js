@@ -302,11 +302,209 @@ describe("Post /savecommand", () => {
   });
 });
 
+describe("Post /uploadimage", () => {
+  it("BEB12- Recieve binary image data and save to database with status 200 OK response", async () => {
+    
+    const imagePath = "../server/TestingImage.png";
+    const targetImageID = 20231109211612;
+    //Need to convert binary data to base64 for server to write correctly
+    const imageData = await fs.readFile(imagePath, 'binary');
+    const base64ImageData = Buffer.from(imageData, 'binary').toString('base64');
+
+    const json = {
+      filename: 'Testing1Image.png',
+      ID: targetImageID,
+      Data: base64ImageData,
+    };
+
+    await request(server)
+      .post("/uploadimage")
+      .send(json) 
+      //Checking for 200 OK and Correct response message
+      .expect(200) 
+      .then((response) => {
+        expect(response.body.message).toEqual("Image data successfully uploaded"); 
+      })
+      .catch((err) => {
+        console.error(`Error: ${err.message}`);
+      });
+      
+  });
+});
+
+describe("Post /retrieveimage", () => {
+  it("BEB13- Sent request for image using ID, receive 200 OK Status and save the image to file", async () => {
+    
+    const targetImageID = 20231109211612;
+    let exists = false;
+    
+    const json = {
+      ID: targetImageID,
+    };
+
+    await request(server)
+      .post("/retrieveimage")
+      .send(json) 
+      // Checking for 200 OK and Correct response message
+      .expect(200) 
+      .then(async (response) => {
+        var imageBuffer = Buffer.from(response.body.imageData, 'base64');
+        const filename = response.body.filename;
+        
+        try {
+          await fs.writeFile(filename, imageBuffer, 'binary');
+          console.log("Image successfully written to file.");
+          // Check if the file exists
+          exists = await fs.access(filename).then(() => true).catch(() => false);
+        } catch (err) {
+          console.error("Error writing the image:", err);
+        }
+      })
+      .catch((err) => {
+        console.error(`Error: ${err.message}`);
+      });
+
+    expect(exists).toEqual(true);
+  });
+});
+
+describe("Post /retrieveimage", () => {
+  it("BEB14- Sent an invalid request for image using ID, receive 404 image not found", async () => {
+    
+    const targetImageID = 99;
+    
+    const json = {
+      ID: targetImageID,
+    };
+
+    await request(server)
+    .post("/retrieveimage")
+    .send(json) 
+    //Checking for 404 Image not found and Correct response message
+    .expect(404) 
+    .then((response) => {
+      expect(response.body.message).toEqual("Image data not found"); 
+    })
+    .catch((err) => {
+      console.error(`Error: ${err.message}`);
+    });
+    
+  });
+});
+
+describe("Post /retrieveimage", () => {
+  it("BEB15- Sent an invalid request with null ID", async () => {
+    
+    const targetImageID = null;
+  
+    const json = {
+      ID: targetImageID,
+    };
+
+    await request(server)
+    .post("/retrieveimage")
+    .send(json) 
+    //Checking for 400 ID must not be null
+    .expect(400) 
+    .then((response) => {
+      expect(response.body.message).toEqual("Bad request. Image ID is required."); 
+    })
+    .catch((err) => {
+      console.error(`Error: ${err.message}`);
+    });
+    
+  });
+});
+
+describe("Post /uploadimage", () => {
+  it("BEB16- Upload invalid id and recieve a 400 status code", async () => {
+    
+    const imagePath = "../server/TestingImage.png";
+    const targetImageID = null;
+    //Need to convert binary data to base64 for server to write correctly
+    const imageData = await fs.readFile(imagePath, 'binary');
+    const base64ImageData = Buffer.from(imageData, 'binary').toString('base64');
+
+    const json = {
+      filename: 'Testing1Image.png',
+      ID: targetImageID,
+      Data: base64ImageData,
+    };
+
+    await request(server)
+      .post("/uploadimage")
+      .send(json) 
+      //Checking for 200 OK and Correct response message
+      .expect(400) 
+      .then((response) => {
+        expect(response.body.message).toEqual("Bad request. Image Data and Image ID are required."); 
+      })
+      .catch((err) => {
+        console.error(`Error: ${err.message}`);
+      });
+      
+  });
+});
+
+describe("Post /uploadimage", () => {
+  it("BEB17- Upload invalid id with no image and recieve a 404 status code", async () => {
+    
+    const imagePath = "../server/TestingImage.png";
+    const targetImageID = 99;
+    //Need to convert binary data to base64 for server to write correctly
+    const imageData = await fs.readFile(imagePath, 'binary');
+    const base64ImageData = Buffer.from(imageData, 'binary').toString('base64');
+
+    const json = {
+      filename: 'Testing1Image.png',
+      ID: targetImageID,
+      Data: base64ImageData,
+    };
+
+    await request(server)
+      .post("/uploadimage")
+      .send(json) 
+      //Checking for 200 OK and Correct response message
+      .expect(404) 
+      .then((response) => {
+        expect(response.body.message).toEqual("Image data not found"); 
+      })
+      
+      
+  });
+});
+
+describe("Post /savecommand", () => {
+  it("BEB18- Invalid longitude json object, should cause 400 status code", async () => {
+    
+    const json = {
+      longitude: null,
+      latitude: 789.100
+    };
+
+    await request(server)
+      .post("/savecommand")
+      .send(json) 
+      //Checking for 200 OK and Correct response message
+      .expect(400) 
+      .then((response) => {
+        expect(response.body.message).toEqual("Bad request. longitude and latitude are required."); 
+      })
+      .catch((err) => {
+        console.error(`Error: ${err.message}`);
+      });
+      
+  });
+});
+
+
 //Cleanup function, runs once all tests have completed
 afterAll(async () => {
   const imagePath = '../server/20231106_000000_Image.png';
+  const retrieveimagePath = '../server/Testing1Image.png'
   // Delete the image file after the test
   await fs.unlink(imagePath); 
+  await fs.unlink(retrieveimagePath);
   await server.close();
   await mongoose.disconnect();
 });

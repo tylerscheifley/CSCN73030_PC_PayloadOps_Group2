@@ -158,7 +158,7 @@ const server = app.listen(port, () =>
 
 
 
-
+//Intented to be called by the front end for saving the input of coordinates to be send
 app.post("/savecommand", async (req, res) => {
   const longitude = req.body.longitude;
   const latitude = req.body.latitude;
@@ -192,5 +192,85 @@ app.post("/savecommand", async (req, res) => {
     });
   }
 });
+
+app.post("/uploadimage", async (req, res) => {
+  const imageData = req.body.Data;
+  const ID = req.body.ID;
+  var Filename = req.body.filename;
+
+  if (!imageData || !ID) {
+    console.log("No Data: image data or ID not sent");
+    return res.status(400).send({
+      message: "Bad request. Image Data and Image ID are required.",
+    });
+  }
+  const binaryData = Buffer.from(imageData, 'base64');
+
+  try {
+    const updatedDocument = await payloadModel.findOneAndUpdate(
+      { imageID: ID }, // Search criteria
+      { $set: { filename: Filename, imageData: binaryData } }, // Fields to update
+      { new: true, upsert: false } 
+    ).exec();
+
+    if (updatedDocument) {
+      console.log('Updated document:', updatedDocument);
+      res.status(200).send({
+        message: "Image data successfully uploaded",
+      });
+    } else {
+      console.log('Record not found.');
+      // Update later to implement if ID can't find one 
+      res.status(404).send({
+        message: "Image data not found",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      message: "Error saving image to the database",
+    });
+  }
+});
+
+//Intended to be used internally by the client searching 
+app.post("/retrieveimage", async (req, res) => {
+ 
+  const ID = req.body.ID;
+
+  if (!ID) {
+    console.log("No ID was sent");
+    return res.status(400).send({
+      message: "Bad request. Image ID is required.",
+    });
+  }
+
+  try {
+    const imageDocument = await payloadModel.findOne({ imageID: ID }).lean().exec();
+
+    if (imageDocument && imageDocument.imageData) {
+
+      // Send the binary image data as the response body
+      console.log(imageDocument.imageData)
+      res.status(200).send({
+        imageData: imageDocument.imageData,
+        filename: imageDocument.filename,
+      });
+    } else {
+      console.log('Image data not found.');
+      res.status(404).send({
+        message: "Image data not found",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      message: "Error retrieving image data from the database",
+    });
+  }
+});
+
+
+
 
 module.exports = server;

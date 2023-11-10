@@ -7,11 +7,11 @@ const payloadSchema = new Schema({
         required: false,
     },
     latitude: {
-        type: Number,
+        type: String,
         required: true,
     },
     longitude: {
-        type: Number,
+        type: String,
         required: true,
     },
     date: {
