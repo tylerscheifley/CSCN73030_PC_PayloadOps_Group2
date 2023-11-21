@@ -14,43 +14,43 @@ const data = [
     time: "10:22:01-2023-10-18",
     coordinates: "41.40338, 2.17403",
     imageID: "I1",
-    status: "Pending...",
+    status: "Success",
   },
   {
     time: "10:24:11-2023-10-18",
     coordinates: "41.40338, 2.17403",
     imageID: "I2",
-    status: "Pending...",
+    status: "Reject-By-Structure",
   },
   {
     time: "10:34:11-2023-10-18",
     coordinates: "41.40338, 2.17403",
     imageID: "I3",
-    status: "Pending...",
+    status: "Unknown",
   },
   {
     time: "10:34:11-2023-10-18",
     coordinates: "41.40338, 2.17403",
     imageID: "I4",
-    status: "Pending...",
+    status: "Reject-By-Logic",
   },
   {
     time: "10:24:11-2023-10-18",
     coordinates: "41.40338, 2.17403",
-    imageID: "I2",
-    status: "Pending...",
+    imageID: "I5",
+    status: "Success",
   },
   {
     time: "10:34:11-2023-10-18",
     coordinates: "41.40338, 2.17403",
-    imageID: "I3",
-    status: "Pending...",
+    imageID: "I6",
+    status: "Reject-By-Loss",
   },
   {
     time: "10:34:11-2023-10-18",
     coordinates: "41.40338, 2.17403",
-    imageID: "I4",
-    status: "Pending...",
+    imageID: "I7",
+    status: "Success",
   },
 ];
 
@@ -118,13 +118,13 @@ function App() {
       </div>
 
       <div className="Table-Spacing">
-        <table className="Table">
+        <table className="table">
           <thead>
             <tr>
-              <th>Image ID</th>
-              <th>Time</th>
-              <th>Coordinates</th>
-              <th>Status</th>
+              <th className="imageID">Image ID</th>
+              <th className="time">Time</th>
+              <th className="coordinates">Coordinates</th>
+              <th className="status">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -133,7 +133,7 @@ function App() {
                 <td>🔎 {val.imageID}</td>
                 <td>📅 {val.time}</td>
                 <td>🌍 {val.coordinates}</td>
-                <td> <span cassName="status">{val.status}</span></td>
+                <td className="statusContent"> <span className={`status status-${val.status}`}>{val.status}</span></td>
               </tr>
             ))}
           </tbody>
@@ -145,7 +145,7 @@ function App() {
       </div>
 
       <div className="Images">
-        <img src={img} className="App-logo" alt="satimg" />
+        <img src={img} className="image" alt="satimg" />
       </div>
 
       <div className="ImageDesc">
