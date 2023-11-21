@@ -1,10 +1,10 @@
 //needed dotenv for connection URI
-require('dotenv').config();
+require("dotenv").config();
 const express = require("express");
 const app = express();
 //Database connection
 const mongoose = require("mongoose");
-const connectDB = require('./dbConnection');
+const connectDB = require("./dbConnection");
 const payloadModel = require("./model");
 //Server hosting variables
 var querystring = require("querystring");
@@ -34,23 +34,67 @@ app.get("/", (req, res) => {
   res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
 });
 
+app.post("/request", (req, res) => {
+  var Longitude = req.body.Longitude;
+  var Latitude = req.body.Latitude;
+
+  console.log("Request recieved");
+  console.log("Longitude: " + Longitude);
+  console.log("Latitude: " + Latitude);
+
+  if (!Longitude || !Latitude) {
+    console.log("Failed the check...");
+    return res.status(400).send({
+      message: "Bad request. Longitude and Latitude are required.",
+    });
+  }
+
+  // var GroundStationPayloadIp = "blank";
+  // var id = 0; //generateRequestID();
+
+  // var json = {
+  //   ID: id,
+  //   Longitude: Longitude,
+  //   Latitude: Latitude,
+  // };
+
+  // //send a post request to the GroundStationPayload with a json object
+  // var options = {
+  //   hostname: GroundStationPayloadIp,
+  //   port: 8080,
+  //   path: "/request",
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify(json),
+  // };
+
+  // var req = http.request(options, (res) => {
+  //   console.log(`statusCode: ${res.statusCode}`);
+
+  //   res.on("data", (d) => {
+  //     process.stdout.write(d);
+  //   });
+  // });
+});
+
 //Get Image from payload
 app.post("/payloadimage", function (req, res) {
   const ImageData = req.body.Data;
   const ID = req.body.ID;
   //Unique name generated
   var imagePath = `../server/${ID}_Image.png`;
-  
+
   //First checking to ensure image data isn't null
-  if(!ImageData) 
-  {
+  if (!ImageData) {
     console.log("No image data sent");
     return res.status(400).send({
       message: "Bad request. Image data is required.",
     });
   }
   //Convert ImageData binary data to base64
-  var imageBuffer = Buffer.from(ImageData, 'base64');
+  var imageBuffer = Buffer.from(ImageData, "base64");
 
   fs.writeFile(imagePath, imageBuffer, (err) => {
     if (err) {
@@ -58,16 +102,15 @@ app.post("/payloadimage", function (req, res) {
       console.error("Error writing the image:", err);
       res.status(500).send("There was an error writing the image");
     } else {
-      console.log('Image: ', ID, ' Sucessfully created');
+      console.log("Image: ", ID, " Sucessfully created");
       //200 OK upon the creation of the image
       res.status(200).send({
         message: "Recieved the image data",
-      })
+      });
     }
   });
 
-  //Insert Saving image to database functionality below 
-
+  //Insert Saving image to database functionality below
 });
 
 app.post("/Status", (req, res) => {
@@ -117,8 +160,7 @@ app.post("/Status", (req, res) => {
 const PORT = process.env.PORT || 8080;
 console.log("server started on port:", PORT);
 //Server only listens once connection to DB has been established.
-mongoose.connection.once('open', () => {
-  console.log('Connected to MongoDB');
+mongoose.connection.once("open", () => {
+  console.log("Connected to MongoDB");
   app.listen(PORT);
 });
-

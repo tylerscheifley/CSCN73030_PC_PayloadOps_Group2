@@ -49,6 +49,20 @@ function App() {
     alert(
       `You have submitted \nLatitude: ${latitude}\nLongitude: ${longitude}`
     );
+
+    //send the data to the server in json
+    const data = {
+      Latitude: latitude,
+      Longitude: longitude,
+    };
+
+    fetch("/Request", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
   };
   return (
     <div className="App">
@@ -65,7 +79,7 @@ function App() {
               <Model scale={2} />
               <OrbitControls
                 autoRotate
-                autoRotateSpeed={1.0}
+                autoRotateSpeed={-1.0}
                 enableZoom={false}
               />
             </Stage>
