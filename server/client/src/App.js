@@ -14,16 +14,43 @@ const data = [
     time: "10:22:01-2023-10-18",
     coordinates: "41.40338, 2.17403",
     imageID: "I1",
+    status: "Pending...",
   },
   {
     time: "10:24:11-2023-10-18",
     coordinates: "41.40338, 2.17403",
     imageID: "I2",
+    status: "Pending...",
   },
   {
     time: "10:34:11-2023-10-18",
     coordinates: "41.40338, 2.17403",
     imageID: "I3",
+    status: "Pending...",
+  },
+  {
+    time: "10:34:11-2023-10-18",
+    coordinates: "41.40338, 2.17403",
+    imageID: "I4",
+    status: "Pending...",
+  },
+  {
+    time: "10:24:11-2023-10-18",
+    coordinates: "41.40338, 2.17403",
+    imageID: "I2",
+    status: "Pending...",
+  },
+  {
+    time: "10:34:11-2023-10-18",
+    coordinates: "41.40338, 2.17403",
+    imageID: "I3",
+    status: "Pending...",
+  },
+  {
+    time: "10:34:11-2023-10-18",
+    coordinates: "41.40338, 2.17403",
+    imageID: "I4",
+    status: "Pending...",
   },
 ];
 
@@ -87,6 +114,9 @@ function App() {
         </Canvas>
       </div>
 
+      <div className="shape-spacer">
+      </div>
+
       <div className="Table-Spacing">
         <table className="Table">
           <thead>
@@ -94,14 +124,16 @@ function App() {
               <th>Image ID</th>
               <th>Time</th>
               <th>Coordinates</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody>
             {data.map((val, key) => (
               <tr key={key}>
-                <td>{val.imageID}</td>
-                <td>{val.time}</td>
-                <td>{val.coordinates}</td>
+                <td>🔎 {val.imageID}</td>
+                <td>📅 {val.time}</td>
+                <td>🌍 {val.coordinates}</td>
+                <td> <span cassName="status">{val.status}</span></td>
               </tr>
             ))}
           </tbody>
