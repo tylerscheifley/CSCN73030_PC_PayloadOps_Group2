@@ -1,4 +1,3 @@
-import img from "./Satellite image.jpg";
 import "./App.css";
 import React, { useState } from "react";
 import { Canvas } from "@react-three/fiber";
@@ -91,6 +90,20 @@ function App() {
       body: JSON.stringify(data),
     });
   };
+
+  const [imagePath, setImagePath] = useState('./defaultNoImage.png');
+
+  const handleImgView = (imgName, imgStatus) => {
+    if(imgStatus == "Success")
+    {
+      setImagePath(imgName + ".jpg");
+    }
+    else
+    {
+      setImagePath("./defaultNoImage.png");
+    }
+  }
+
   return (
     <div className="App">
       <header className="App-header">
@@ -130,10 +143,10 @@ function App() {
           <tbody>
             {data.map((val, key) => (
               <tr key={key}>
-                <td>🔎 {val.imageID}</td>
-                <td>📅 {val.time}</td>
-                <td>🌍 {val.coordinates}</td>
-                <td className="statusContent"> <span className={`status status-${val.status}`}>{val.status}</span></td>
+                <td onClick={() => handleImgView(val.imageID, val.status)}>🔎 {val.imageID}</td>
+                <td onClick={() => handleImgView(val.imageID, val.status)}>📅 {val.time}</td>
+                <td onClick={() => handleImgView(val.imageID, val.status)}>🌍 {val.coordinates}</td>
+                <td className="statusContent" onClick={() => handleImgView(val.imageID, val.status)}> <span className={`status status-${val.status}`}>{val.status}</span></td>
               </tr>
             ))}
           </tbody>
@@ -145,7 +158,7 @@ function App() {
       </div>
 
       <div className="Images">
-        <img src={img} className="image" alt="satimg" />
+        <img src={imagePath} className="image" alt="satimg" />
       </div>
 
       <div className="ImageDesc">
