@@ -1,6 +1,8 @@
 import img from "./Satellite image.jpg";
 import "./App.css";
 import React, { useState } from "react";
+import Popup from "reactjs-popup";
+import "reactjs-popup/dist/index.css";
 import { Canvas } from "@react-three/fiber";
 import {
   useGLTF,
@@ -171,6 +173,41 @@ function App() {
           </button>
         </div>
       </form>
+
+      <div>
+        <br></br>
+        <Popup
+          trigger={<button className="submit-btn">Database Tools</button>}
+          modal
+          nested
+        >
+          {(close) => (
+            <div>
+              <div className="content">
+                <h1>Database Tools</h1>
+                <Popup trigger={<button>Create</button>} modal nested>
+                  {(close) => (
+                    <div>
+                      <h2>Longitude</h2>
+                      <input type="text"></input> <br></br>
+                      <h2>Latitude</h2>
+                      <input type="text"></input> <br></br>
+                      <h2>Image Upload</h2>
+                      <input type="file" id="myFile" name="filename"></input>
+                      <input type="submit"></input>
+                      <button onClick={() => close()}>Close</button>
+                    </div>
+                  )}
+                </Popup>
+                <button>Read</button>
+                <button>Update</button>
+                <button>Delete</button>
+                <button onClick={() => close()}>Close</button>
+              </div>
+            </div>
+          )}
+        </Popup>
+      </div>
     </div>
   );
 }
