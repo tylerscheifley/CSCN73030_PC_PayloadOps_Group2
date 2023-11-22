@@ -174,18 +174,21 @@ function App() {
         </div>
       </form>
 
-      <div>
+      <div className="input-group">
         <br></br>
         <Popup
-          trigger={<button className="submit-btn">Database Tools</button>}
+          trigger={<button type="submit" className="submit-btn">Database Tools</button>}
           modal
           nested
+          contentStyle={{ backgroundColor: 'lightblue', padding: '20px' }} 
         >
           {(close) => (
             <div>
-              <div className="content">
+              <div className="buttonLayoutCol">
                 <h1>Database Tools</h1>
-                <Popup trigger={<button>Create</button>} modal nested>
+                <Popup
+                contentStyle={{ backgroundColor: 'lightblue', padding: '20px' }} 
+                trigger={<button type="submit" className="popup-btn">Create</button>} modal nested>
                   {(close) => (
                     <div>
                       <h2>Longitude</h2>
@@ -199,10 +202,12 @@ function App() {
                     </div>
                   )}
                 </Popup>
-                <button>Read</button>
-                <button>Update</button>
-                <button>Delete</button>
-                <button onClick={() => close()}>Close</button>
+                <div className="ButtonLayoutRow"> 
+                <button button type="submit" className="popup-btn">Read</button>
+                <button button type="submit" className="popup-btn">Update</button>
+                <button button type="submit" className="popup-btn">Delete</button>
+                <button button type="submit" className="popup-btn"onClick={() => close()}>Close</button>
+                </div>
               </div>
             </div>
           )}
