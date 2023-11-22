@@ -100,6 +100,21 @@ td {
   font-size: calc(0.5px + 2vmin);
 }
 
+.popup-btn{
+  right: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: #4f90aa;
+  border-radius: 5px;
+  border: 2px solid #4f90aa;
+  font-size: calc(0.5px + 2vmin);
+  flex-direction: column;
+  display: flex;
+  gap: 30px;
+}
+
 .input-group{
   padding-bottom: 1%;
   padding-left: 2%;
