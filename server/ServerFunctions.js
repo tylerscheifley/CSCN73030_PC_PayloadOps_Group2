@@ -1,3 +1,5 @@
+const payloadModel = require("./model");
+
 export function generateRequestID() {
   var date = new Date();
   var year = date.getFullYear();
@@ -10,3 +12,32 @@ export function generateRequestID() {
     year + "" + month + "" + day + "_" + hour + "" + minute + "" + seconds;
   return ID;
 }
+
+export async function updateDocument(binaryData, ID)
+{
+  const Filename = `${ID}_Image.png`;
+  let result = " ";
+  try {
+    const updatedDocument = await payloadModel.findOneAndUpdate(
+      { imageID: ID }, // Search criteria
+      { $set: { filename: Filename, imageData: binaryData } }, // Fields to update
+      { new: true, upsert: false } 
+    ).exec();
+
+    if (updatedDocument) {
+      console.log('Updated document:', updatedDocument);
+      result = "Uploaded";
+     
+    } else {
+      console.log('Record not found.');
+      result ="Not Found";
+    }
+  } catch (error) {
+    console.error(error);
+    result = "Error";
+  }
+
+  return result;
+}
+
+

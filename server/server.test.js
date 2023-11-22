@@ -3,7 +3,7 @@ const server = require("../server/serverMockFunctions");
 const exp = require("constants");
 const fs = require("fs").promises;
 const XMLHttpRequest = require("xhr2");
-import { generateRequestID } from "./ServerFunctions";
+import { binaryToHex, generateRequestID } from "./ServerFunctions";
 const { default: mongoose } = require("mongoose");
 
 
@@ -98,7 +98,7 @@ describe("POST /payloadimage", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.message).toEqual(
-          "Bad request. Image data is required."
+          "Bad request. Image data, ID, Sequence, and Fin flag are required."
         );
       });
   });
@@ -270,18 +270,23 @@ describe("Test the request ID generation", () => {
     expect(actual).toEqual(ID);
   });
 });
-server.close();
+//server.close();
 // POST PayloadImage valid image being sent
 describe("Post /payloadimage", () => {
   it("BEB10- Send valid testing image and receive 200 OK response code", async () => {
     const imagePath = "../server/TestingImage.png";
     //Need to convert binary data to base64 for server to write correctly
-    const imageData = await fs.readFile(imagePath, "binary");
-    const base64ImageData = Buffer.from(imageData, "binary").toString("base64"); // Read the image file asynchronously
+    const imageData = await fs.readFile(imagePath);
+    const hexString = imageData.toString('hex'); // Read the image file asynchronously
+    // Split the hex string into lines
+    const firstTwoLines = hexString.substring(500, 10000);
+    //console.log(hexString);
     //Json packet creation
     const json = {
       ID: "20231106_000000",
-      Data: base64ImageData,
+      raw: firstTwoLines,
+      sequencenumber: 10,
+      finflag: false,
     };
 
     await request(server)
@@ -290,7 +295,35 @@ describe("Post /payloadimage", () => {
       //Checking for 200 OK and Correct response message
       .expect(200)
       .then((response) => {
-        expect(response.body.message).toEqual("Recieved the image data");
+        expect(response.body.message).toEqual("Received image packet");
+      })
+      .catch((err) => {
+        console.error(`Error: ${err.message}`);
+      });
+  });
+});
+
+describe("Post /payloadimage", () => {
+  it("BEB19- Send full image and receive 200 OK response code complete image", async () => {
+    const imagePath = "../server/TestingImage.png";
+    //Need to convert binary data to base64 for server to write correctly
+    const imageData = await fs.readFile(imagePath);
+    const hexString = imageData.toString('hex'); // Read the image file asynchronously
+    //Json packet creation
+    const json = {
+      ID: "111_1111",
+      raw: hexString,
+      sequencenumber: 0,
+      finflag: true,
+    };
+
+    await request(server)
+      .post("/payloadimage")
+      .send(json)
+      //Checking for 200 OK and Correct response message
+      .expect(200)
+      .then((response) => {
+        expect(response.body.message).toEqual("Received the complete image data");
       })
       .catch((err) => {
         console.error(`Error: ${err.message}`);
@@ -325,7 +358,7 @@ describe("Post /uploadimage", () => {
   it("BEB12- Recieve binary image data and save to database with status 200 OK response", async () => {
     
     const imagePath = "../server/TestingImage.png";
-    const targetImageID = 20231109211612;
+    const targetImageID = "20231109_211612";
     //Need to convert binary data to base64 for server to write correctly
     const imageData = await fs.readFile(imagePath, 'binary');
     const base64ImageData = Buffer.from(imageData, 'binary').toString('base64');
@@ -354,7 +387,7 @@ describe("Post /uploadimage", () => {
 describe("Post /retrieveimage", () => {
   it("BEB13- Sent request for image using ID, receive 200 OK Status and save the image to file", async () => {
     
-    const targetImageID = 20231109211612;
+    const targetImageID = "20231109_211612";
     let exists = false;
     
     const json = {
@@ -519,11 +552,11 @@ describe("Post /savecommand", () => {
 
 //Cleanup function, runs once all tests have completed
 afterAll(async () => {
-  const imagePath = '../server/20231106_000000_Image.png';
-  const retrieveimagePath = '../server/Testing1Image.png'
+  const imagePath = '../server/20231109_211612_Image.png';
+  //const retrieveimagePath = '../server/Testing1Image.png'
   // Delete the image file after the test
   await fs.unlink(imagePath); 
-  await fs.unlink(retrieveimagePath);
+  //await fs.unlink(retrieveimagePath);
   await server.close();
   await mongoose.disconnect();
 });
