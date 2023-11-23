@@ -186,8 +186,6 @@ function App() {
 
   const [imagePath, setImagePath] = useState("./defaultNoImage.png");
 
-  const [imagePath, setImagePath] = useState('./defaultNoImage.png');
-
   const hexToBytes = (hex) => {
     const bytes = [];
     for (let i = 0; i < hex.length; i += 2) {
@@ -196,31 +194,12 @@ function App() {
     return new Uint8Array(bytes);
   };
 
-
-  
   const handleImgView = (imgName, imgStatus) => {
     if (imgStatus === "Success") {
-      setImagePath(imgName + ".jpg");
-    } else {
-      setImagePath("./defaultNoImage.png");
-    }
-  };
-  const hexToBytes = (hex) => {
-    const bytes = [];
-    for (let i = 0; i < hex.length; i += 2) {
-      bytes.push(parseInt(hex.substr(i, 2), 16));
-    }
-    return new Uint8Array(bytes);
-  };
-
-
-  
-  const handleImgView = (imgName, imgStatus) => {
-    if (imgStatus === "Success") {
-      fetch('/retrieveimage', {
-        method: 'POST',
+      fetch("/retrieveimage", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ ID: imgName }),
       })
@@ -233,27 +212,27 @@ function App() {
         .then((blob) => {
           // Create a new FileReader
           const reader = new FileReader();
-  
+
           // Read the blob as data URL
           reader.readAsDataURL(blob);
-          console.log('GSDDDDDDDDDDDDDDDDDDDDDDDD', blob);
+          console.log("GSDDDDDDDDDDDDDDDDDDDDDDDD", blob);
 
           // When the reading is done, create an anchor element to trigger download
           reader.onloadend = () => {
             const dataUrl = reader.result;
-            
+
             // Create an anchor element
-            const a = document.createElement('a');
+            const a = document.createElement("a");
             a.href = dataUrl;
-            a.download = 'image.png'; // You can customize the filename here
-  
+            a.download = "image.png"; // You can customize the filename here
+
             // Trigger a click on the anchor element to start the download
             a.click();
           };
-          setImagePath('image.png');
+          setImagePath("image.png");
         })
         .catch((error) => {
-          console.error('Error fetching image:', error.message);
+          console.error("Error fetching image:", error.message);
           setImagePath("./defaultNoImage.png");
         });
     } else {
@@ -261,7 +240,6 @@ function App() {
       setImagePath("./defaultNoImage.png");
     }
   };
-  
 
   const [data, setData] = useState({
     imageID: [],
@@ -274,10 +252,10 @@ function App() {
   const [someState, setSomeState] = useState(null);
 
   useEffect(() => {
-    fetch('/retrieveallcommands', {
-      method: 'POST',
+    fetch("/retrieveallcommands", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     })
       .then((response) => {
@@ -290,7 +268,7 @@ function App() {
         setData(data);
       })
       .catch((error) => {
-        console.error('Error fetching data:', error.message);
+        console.error("Error fetching data:", error.message);
       });
   }, [someState]);
 
@@ -334,32 +312,39 @@ function App() {
             </tr>
           </thead>
           <tbody>
-            {data.map((val, key) => (
-              <tr key={key}>
-                <td onClick={() => handleImgView(val.imageID, val.status)}>
-                  🔎 {val.imageID}
+            {data.imageID.map((_, index) => (
+              <tr key={index}>
+                <td
+                  onClick={() =>
+                    handleImgView(data.imageID[index], data.status[index])
+                  }
+                >
+                  🔎 {data.imageID[index]}
                 </td>
-                <td onClick={() => handleImgView(val.imageID, val.status)}>
-                  📅 {val.time}
+                <td
+                  onClick={() =>
+                    handleImgView(data.imageID[index], data.status[index])
+                  }
+                >
+                  📅 {data.date[index]}
                 </td>
-                <td onClick={() => handleImgView(val.imageID, val.status)}>
-                  🌍 {val.coordinates}
+                <td
+                  onClick={() =>
+                    handleImgView(data.imageID[index], data.status[index])
+                  }
+                >
+                  🌍 {data.latitude[index]}, {data.longitude[index]}
                 </td>
                 <td
                   className="statusContent"
-                  onClick={() => handleImgView(val.imageID, val.status)}
+                  onClick={() =>
+                    handleImgView(data.imageID[index], data.status[index])
+                  }
                 >
-                  {" "}
-                  <span className={`status status-${val.status}`}>
-                    {val.status}
+                  <span className={`status status-${data.status[index]}`}>
+                    {data.status[index]}
                   </span>
                 </td>
-            {data.imageID.map((_, index) => (
-              <tr key={index}>
-                <td onClick={() => handleImgView(data.imageID[index], data.status[index])}>🔎 {data.imageID[index]}</td>
-                <td onClick={() => handleImgView(data.imageID[index], data.status[index])}>📅 {data.date[index]}</td>
-                <td onClick={() => handleImgView(data.imageID[index], data.status[index])}>🌍 {data.latitude[index]}, {data.longitude[index]}</td>
-                <td className="statusContent" onClick={() => handleImgView(data.imageID[index], data.status[index])}> <span className={`status status-${data.status[index]}`}>{data.status[index]}</span></td>
               </tr>
             ))}
           </tbody>
@@ -367,10 +352,14 @@ function App() {
       </div>
 
       <div className="buttonLayoutRefresh">
-          <button onClick={() => manuallyTriggerEffect()} type="submit" className="refresh-btn">
+        <button
+          onClick={() => manuallyTriggerEffect()}
+          type="submit"
+          className="refresh-btn"
+        >
           🔄
-          </button>
-        </div>
+        </button>
+      </div>
 
       <div className="ImageDesc">
         <p>📷 Satellite imagery...</p>
