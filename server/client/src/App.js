@@ -1,4 +1,3 @@
-import img from "./Satellite image.jpg";
 import "./App.css";
 import React, { useState } from "react";
 import { Canvas } from "@react-three/fiber";
@@ -14,16 +13,43 @@ const data = [
     time: "10:22:01-2023-10-18",
     coordinates: "41.40338, 2.17403",
     imageID: "I1",
+    status: "Success",
   },
   {
     time: "10:24:11-2023-10-18",
     coordinates: "41.40338, 2.17403",
     imageID: "I2",
+    status: "Reject-By-Structure",
   },
   {
     time: "10:34:11-2023-10-18",
     coordinates: "41.40338, 2.17403",
     imageID: "I3",
+    status: "Unknown",
+  },
+  {
+    time: "10:34:11-2023-10-18",
+    coordinates: "41.40338, 2.17403",
+    imageID: "I4",
+    status: "Reject-By-Logic",
+  },
+  {
+    time: "10:24:11-2023-10-18",
+    coordinates: "41.40338, 2.17403",
+    imageID: "I5",
+    status: "Success",
+  },
+  {
+    time: "10:34:11-2023-10-18",
+    coordinates: "41.40338, 2.17403",
+    imageID: "I6",
+    status: "Reject-By-Loss",
+  },
+  {
+    time: "10:34:11-2023-10-18",
+    coordinates: "41.40338, 2.17403",
+    imageID: "I7",
+    status: "Success",
   },
 ];
 
@@ -64,6 +90,20 @@ function App() {
       body: JSON.stringify(data),
     });
   };
+
+  const [imagePath, setImagePath] = useState('./defaultNoImage.png');
+
+  const handleImgView = (imgName, imgStatus) => {
+    if(imgStatus == "Success")
+    {
+      setImagePath(imgName + ".jpg");
+    }
+    else
+    {
+      setImagePath("./defaultNoImage.png");
+    }
+  }
+
   return (
     <div className="App">
       <header className="App-header">
@@ -87,21 +127,26 @@ function App() {
         </Canvas>
       </div>
 
+      <div className="shape-spacer">
+      </div>
+
       <div className="Table-Spacing">
-        <table className="Table">
+        <table className="table">
           <thead>
             <tr>
-              <th>Image ID</th>
-              <th>Time</th>
-              <th>Coordinates</th>
+              <th className="imageID">Image ID</th>
+              <th className="time">Time</th>
+              <th className="coordinates">Coordinates</th>
+              <th className="status">Status</th>
             </tr>
           </thead>
           <tbody>
             {data.map((val, key) => (
               <tr key={key}>
-                <td>{val.imageID}</td>
-                <td>{val.time}</td>
-                <td>{val.coordinates}</td>
+                <td onClick={() => handleImgView(val.imageID, val.status)}>🔎 {val.imageID}</td>
+                <td onClick={() => handleImgView(val.imageID, val.status)}>📅 {val.time}</td>
+                <td onClick={() => handleImgView(val.imageID, val.status)}>🌍 {val.coordinates}</td>
+                <td className="statusContent" onClick={() => handleImgView(val.imageID, val.status)}> <span className={`status status-${val.status}`}>{val.status}</span></td>
               </tr>
             ))}
           </tbody>
@@ -113,7 +158,7 @@ function App() {
       </div>
 
       <div className="Images">
-        <img src={img} className="App-logo" alt="satimg" />
+        <img src={imagePath} className="image" alt="satimg" />
       </div>
 
       <div className="ImageDesc">
