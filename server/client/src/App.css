@@ -71,6 +71,7 @@ body {
 
 .submit-btn:hover {
   background-color: #ebebeb;
+  cursor: pointer;
 }
 
 .input-group {
@@ -158,6 +159,7 @@ body {
 
 .table tbody tr:hover {
   background-color: #1e1e1ea9;
+  cursor: pointer;
 }
 
 .status {
