@@ -5,6 +5,7 @@ const fs = require("fs").promises;
 const XMLHttpRequest = require("xhr2");
 import { binaryToHex, generateRequestID, saveStatus } from "./ServerFunctions";
 const { default: mongoose } = require("mongoose");
+const payloadModel = require("./model");
 
 
 describe("POST /GroundStationPayload", () => {
@@ -572,7 +573,7 @@ describe("Test updating status invalid ID", () => {
 });
 
 describe('POST /retrieveallcommands', () => {
-  it('should retrieve all commands excluding the first record', async () => {
+  it('BEB22- should retrieve all commands excluding the first record', async () => {
     await request(server)
     .post("/retrieveallcommands")
     //Checking for 200 OK and Correct response message
@@ -580,6 +581,57 @@ describe('POST /retrieveallcommands', () => {
     .catch((err) => {
       console.error(`Error: ${err.message}`);
     });
+  });
+});
+
+describe("Post /deleterecord", () => {
+  it("BEB23- Delete valid record with given ID", async () => {
+    const id = "1";
+    const testingLatitude = "123";
+    const testingLongitude = "567";
+
+    const json = {
+      ID: id
+    };
+
+    const payloadData = new payloadModel({
+      latitude: testingLatitude,
+      longitude: testingLongitude,
+      date: id,
+      imageID: id,
+    });
+
+    await payloadData.save();
+    await request(server)
+      .post("/deleterecord")
+      .send(json) 
+      //Checking for 200 OK and Correct response message
+      .expect(200) 
+      .then((response) => {
+        expect(response.body.message).toEqual("Record deleted successfully"); 
+      })
+      
+      
+  });
+});
+
+describe("Post /deleterecord", () => {
+  it("BEB24- Recieve invalid ID with 404 not found response", async () => {
+    const id = "testingid";
+
+    const json = {
+      ID: id
+    };
+
+    await request(server)
+      .post("/deleterecord")
+      .send(json) 
+      //Checking for 404 not found and Correct response message
+      .expect(404) 
+      .then((response) => {
+        expect(response.body.message).toEqual("No matching record found for deletion"); 
+      })
+      
   });
 });
 

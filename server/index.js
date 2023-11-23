@@ -175,7 +175,7 @@ app.post("/payloadimage", async (req, res) => {
   });
 });
 
-app.post("/Status", (req, res) => {
+app.post("/Status", async (req, res) => {
   //json object with a status and id
   const ID = req.body.ID;
   const Status = req.body.Status;
@@ -214,7 +214,7 @@ app.post("/Status", (req, res) => {
   }
 
   try {
-    const saveResult = saveStatus(ID, Status);
+    const saveResult = await saveStatus(ID, Status);
     console.log("Save result: ", saveResult);
 
   } catch(error) {
@@ -333,6 +333,40 @@ app.post("/savecommand", async (req, res) => {
     console.error(error);
     res.status(500).send({
       message: "Error saving command to the database",
+    });
+  }
+});
+
+//Delete record provided image ID
+app.post("/deleterecord", async (req, res) => {
+ 
+  const ID = req.body.ID;
+
+  if (!ID) {
+    console.log("No ID was sent");
+    return res.status(400).send({
+      message: "Bad request. Image ID is required.",
+    });
+  }
+  
+  try {
+    const result = await payloadModel.deleteOne({ imageID: ID }).exec();
+  
+    if (result.deletedCount > 0) {
+      console.log("Record Successfully completed");
+      res.status(200).send({
+        message: "Record deleted successfully",
+      });
+    } else {
+      console.log("No matching record found for deletion.");
+      res.status(404).send({
+        message: "No matching record found for deletion",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      message: "Error deleting image data from the database",
     });
   }
 });

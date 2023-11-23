@@ -368,6 +368,39 @@ app.post("/retrieveallcommands", async (req, res) => {
   }
 });
 
+app.post("/deleterecord", async (req, res) => {
+ 
+  const ID = req.body.ID;
+
+  if (!ID) {
+    console.log("No ID was sent");
+    return res.status(400).send({
+      message: "Bad request. Image ID is required.",
+    });
+  }
+  
+  try {
+    const result = await payloadModel.deleteOne({ imageID: ID }).exec();
+  
+    if (result.deletedCount > 0) {
+      console.log("Record Successfully completed");
+      res.status(200).send({
+        message: "Record deleted successfully",
+      });
+    } else {
+      console.log("No matching record found for deletion.");
+      res.status(404).send({
+        message: "No matching record found for deletion",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      message: "Error deleting image data from the database",
+    });
+  }
+});
+
 
 
 
