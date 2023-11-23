@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import { Canvas } from "@react-three/fiber";
@@ -9,51 +9,6 @@ import {
   PresentationControls,
   OrbitControls,
 } from "@react-three/drei";
-
-const data = [
-  {
-    time: "10:22:01-2023-10-18",
-    coordinates: "41.40338, 2.17403",
-    imageID: "I1",
-    status: "Success",
-  },
-  {
-    time: "10:24:11-2023-10-18",
-    coordinates: "41.40338, 2.17403",
-    imageID: "I2",
-    status: "Reject-By-Structure",
-  },
-  {
-    time: "10:34:11-2023-10-18",
-    coordinates: "41.40338, 2.17403",
-    imageID: "I3",
-    status: "Unknown",
-  },
-  {
-    time: "10:34:11-2023-10-18",
-    coordinates: "41.40338, 2.17403",
-    imageID: "I4",
-    status: "Reject-By-Logic",
-  },
-  {
-    time: "10:24:11-2023-10-18",
-    coordinates: "41.40338, 2.17403",
-    imageID: "I5",
-    status: "Success",
-  },
-  {
-    time: "10:34:11-2023-10-18",
-    coordinates: "41.40338, 2.17403",
-    imageID: "I6",
-    status: "Reject-By-Loss",
-  },
-  {
-    time: "10:34:11-2023-10-18",
-    coordinates: "41.40338, 2.17403",
-    imageID: "I7",
-    status: "Success",
-  },
-];
 
 function Model(props) {
   const { scene } = useGLTF("/source.glb");
@@ -95,16 +50,98 @@ function App() {
 
   const [imagePath, setImagePath] = useState('./defaultNoImage.png');
 
-  const handleImgView = (imgName, imgStatus) => {
-    if(imgStatus == "Success")
-    {
-      setImagePath(imgName + ".jpg");
+  const hexToBytes = (hex) => {
+    const bytes = [];
+    for (let i = 0; i < hex.length; i += 2) {
+      bytes.push(parseInt(hex.substr(i, 2), 16));
     }
-    else
-    {
+    return new Uint8Array(bytes);
+  };
+
+
+  
+  const handleImgView = (imgName, imgStatus) => {
+    if (imgStatus === "Success") {
+      fetch('/retrieveimage', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ID: imgName }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.blob();
+        })
+        .then((blob) => {
+          // Create a new FileReader
+          const reader = new FileReader();
+  
+          // Read the blob as data URL
+          reader.readAsDataURL(blob);
+          console.log('GSDDDDDDDDDDDDDDDDDDDDDDDD', blob);
+
+          // When the reading is done, create an anchor element to trigger download
+          reader.onloadend = () => {
+            const dataUrl = reader.result;
+            
+            // Create an anchor element
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = 'image.png'; // You can customize the filename here
+  
+            // Trigger a click on the anchor element to start the download
+            a.click();
+          };
+          setImagePath('image.png');
+        })
+        .catch((error) => {
+          console.error('Error fetching image:', error.message);
+          setImagePath("./defaultNoImage.png");
+        });
+    } else {
+      // Handle the case when imgStatus is not "Success"
       setImagePath("./defaultNoImage.png");
     }
-  }
+  };
+  
+
+  const [data, setData] = useState({
+    imageID: [],
+    date: [],
+    latitude: [],
+    longitude: [],
+    status: [],
+  });
+
+  const [someState, setSomeState] = useState(null);
+
+  useEffect(() => {
+    fetch('/retrieveallcommands', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setData(data);
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error.message);
+      });
+  }, [someState]);
+
+  const manuallyTriggerEffect = () => {
+    setSomeState(new Date().toISOString());
+  };
 
   return (
     <div className="App">
@@ -143,17 +180,23 @@ function App() {
             </tr>
           </thead>
           <tbody>
-            {data.map((val, key) => (
-              <tr key={key}>
-                <td onClick={() => handleImgView(val.imageID, val.status)}>🔎 {val.imageID}</td>
-                <td onClick={() => handleImgView(val.imageID, val.status)}>📅 {val.time}</td>
-                <td onClick={() => handleImgView(val.imageID, val.status)}>🌍 {val.coordinates}</td>
-                <td className="statusContent" onClick={() => handleImgView(val.imageID, val.status)}> <span className={`status status-${val.status}`}>{val.status}</span></td>
+            {data.imageID.map((_, index) => (
+              <tr key={index}>
+                <td onClick={() => handleImgView(data.imageID[index], data.status[index])}>🔎 {data.imageID[index]}</td>
+                <td onClick={() => handleImgView(data.imageID[index], data.status[index])}>📅 {data.date[index]}</td>
+                <td onClick={() => handleImgView(data.imageID[index], data.status[index])}>🌍 {data.latitude[index]}, {data.longitude[index]}</td>
+                <td className="statusContent" onClick={() => handleImgView(data.imageID[index], data.status[index])}> <span className={`status status-${data.status[index]}`}>{data.status[index]}</span></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      <div className="buttonLayoutRefresh">
+          <button onClick={() => manuallyTriggerEffect()} type="submit" className="refresh-btn">
+          🔄
+          </button>
+        </div>
 
       <div className="ImageDesc">
         <p>📷 Satellite imagery...</p>
