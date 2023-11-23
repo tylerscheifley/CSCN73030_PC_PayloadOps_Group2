@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@mediapipe/tasks-vision": "^0.10.7",
-    "@react-three/drei": "^9.88.11",
+    "@mediapipe/tasks-vision": "^0.10.8",
+    "@react-three/drei": "^9.88.17",
     "@react-three/fiber": "^8.15.10",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -13,6 +13,7 @@
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
     "react-three-fiber": "^6.0.13",
+    "reactjs-popup": "^2.0.6",
     "resize-observer-polyfill": "^1.5.1",
     "three": "^0.158.0",
     "web-vitals": "^2.1.4"

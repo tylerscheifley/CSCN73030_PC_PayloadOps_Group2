@@ -5,7 +5,11 @@ const mongoose = require("mongoose");
 const connectDB = require('./dbConnection');
 const payloadModel = require("./model");
 const app = express();
+app.use(express.json({ limit: '2mb' }));
+app.use(express.urlencoded({ limit: '2mb', extended: true }));
 const fs = require("fs");
+const fps = require('fs/promises');
+const { generateRequestID, updateDocument, saveStatus } = require('./ServerFunctions');
 const port = 3000;
 app.use(express.json());
 
@@ -45,41 +49,97 @@ app.post("/GroundStationPayload", (req, res) => {
 // });
 
 //Updated POST payloadimage
-app.post("/payloadimage", function (req, res) {
-  const ImageData = req.body.Data;
+app.post("/payloadimage", async (req, res) => {
+  const ImageData = req.body.raw;
   const ID = req.body.ID;
-  //Unique name generated
-  var imagePath = `../server/${ID}_Image.png`;
-  
-  //First checking to ensure image data isn't null
-  if(!ImageData) 
-  {
+  const sequenceNumber = req.body.sequencenumber;
+  const finFlag = req.body.finflag;
+
+  // Unique file names created
+  const imagePath = `../server/${ID}_Image.png`;
+  const tempTxtPath = `../server/${ID}_Temp.txt`; 
+
+  // First checking to ensure image data isn't null
+  if (!ImageData || !ID || sequenceNumber === undefined || finFlag === undefined) {
     console.log("No image data sent");
     return res.status(400).send({
-      message: "Bad request. Image data is required.",
+      message: "Bad request. Image data, ID, Sequence, and Fin flag are required.",
     });
   }
-  //Convert ImageData binary data to base64
-  var imageBuffer = Buffer.from(ImageData, 'base64');
 
-  fs.writeFile(imagePath, imageBuffer, (err) => {
+  // Convert ImageData hex data to binary
+  const imageBuffer = Buffer.from(ImageData, 'hex');
+  const formatedContent = `${sequenceNumber},${imageBuffer.toString('hex')}\n`;
+
+  // Storing received image data into temp text file until fin flag is raised
+  fs.appendFile(tempTxtPath, formatedContent, 'binary', (err) => {
     if (err) {
-      //Error 500 is an internal server error writing to a file
-      console.error("Error writing the image:", err);
-      res.status(500).send("There was an error writing the image");
+      console.error("Error writing the binary image data:", err);
+      return res.status(500).send({
+        message: "Error writing image data",
+      });
+    }
+    console.log(`Image buffer ${ID} sequence number ${sequenceNumber} written to temp file`);
+
+    // Writing image can begin once fin flag is raised
+    if (finFlag) {
+      // Reading the entire file of temp txt file 
+      fs.readFile(tempTxtPath, 'binary', (err, data) => {
+        if (err) {
+          console.log("Error reading temp file: ", err);
+          return res.status(500).send({
+            message: "Error reading image data",
+          });
+        }
+
+        // Sorting the data based on the sequence number
+        const sortedData = data.split('\n')
+          .filter(line => line.trim() !== '')
+          .map(line => {
+            const [seqNum, hexData] = line.split(',');
+            return { seqNum: parseInt(seqNum), binaryData: Buffer.from(hexData, 'hex') };
+          })
+          .sort((a, b) => a.seqNum - b.seqNum)
+          .map(item => item.binaryData);
+
+        // Concatenating sorted data into a single Buffer
+
+        //console.log("final sortedData: ", sortedData);
+        const tempBuffer = Buffer.concat(sortedData);
+
+        // Writing image file from sorted data
+        fs.writeFile(imagePath, tempBuffer, 'binary', async (err) => {
+          if (err) {
+            console.error("Error writing the image:", err);
+            return res.status(500).send("There was an error writing the image");
+          }
+          console.log(`Image ${ID} successfully created`);
+          // 200 OK upon the creation of the image
+          res.status(200).send({
+            message: "Received the complete image data",
+          });
+
+          // Deleting temp txt file 
+          fs.unlink(tempTxtPath, (err) => {
+            if (err) {
+              console.error("Error deleting temp file:", err);
+            } else {
+              console.log(`Temp file ${tempTxtPath} deleted`);
+            }
+          });
+
+          // Calling database function to save sorted Data to corresponding ID
+          await updateDocument(sortedData, ID);
+        });
+      });
     } else {
-      console.log('Image: ', ID, ' Sucessfully created');
-      //200 OK upon the creation of the image
+      // When the flag is not raised, send status 200 OK single packet received
       res.status(200).send({
-        message: "Recieved the image data",
-      })
+        message: "Received image packet",
+      });
     }
   });
-
-  //Insert Saving image to database functionality below 
-
 });
-
 
 
 app.post("/Status", (req, res) => {
@@ -119,6 +179,9 @@ app.post("/Status", (req, res) => {
       console.log("Request ID: " + ID + "\n" + "Status: " + "Unknown");
       break;
   }
+  //Save status to database
+  const saveResult = saveStatus(ID, Status);
+  console.log("Save result: ", saveResult);
 
   res.status(200).send({
     message: "Recieved the status",
@@ -171,8 +234,8 @@ app.post("/savecommand", async (req, res) => {
   }
 
   try {
-    const timeStamp = (new Date()).toISOString().replace(/[^0-9]/g, '').slice(0, -3);
-    
+    //const timeStamp = (new Date()).toISOString().replace(/[^0-9]/g, '').slice(0, -3);
+    const timeStamp = generateRequestID();
     const payloadData = new payloadModel({
       latitude: latitude,
       longitude: longitude,
@@ -193,10 +256,11 @@ app.post("/savecommand", async (req, res) => {
   }
 });
 
+
 app.post("/uploadimage", async (req, res) => {
-  const imageData = req.body.Data;
+  const imageData = req.body.raw;
   const ID = req.body.ID;
-  var Filename = req.body.filename;
+  //var Filename = `${ID}_Image.png`;
 
   if (!imageData || !ID) {
     console.log("No Data: image data or ID not sent");
@@ -206,32 +270,33 @@ app.post("/uploadimage", async (req, res) => {
   }
   const binaryData = Buffer.from(imageData, 'base64');
 
-  try {
-    const updatedDocument = await payloadModel.findOneAndUpdate(
-      { imageID: ID }, // Search criteria
-      { $set: { filename: Filename, imageData: binaryData } }, // Fields to update
-      { new: true, upsert: false } 
-    ).exec();
+  const result = await updateDocument(binaryData, ID);
 
-    if (updatedDocument) {
-      console.log('Updated document:', updatedDocument);
-      res.status(200).send({
-        message: "Image data successfully uploaded",
-      });
-    } else {
-      console.log('Record not found.');
-      // Update later to implement if ID can't find one 
-      res.status(404).send({
-        message: "Image data not found",
-      });
-    }
-  } catch (error) {
-    console.error(error);
+  if(result == 'Uploaded')
+  {
+    
+    res.status(200).send({
+      message: "Image data successfully uploaded",
+    });
+
+  }
+  else if(result == "Not Found")
+  {
+    res.status(404).send({
+      message: "Image data not found",
+    });
+
+  }
+  else {
     res.status(500).send({
       message: "Error saving image to the database",
     });
+
   }
+
 });
+
+
 
 //Intended to be used internally by the client searching 
 app.post("/retrieveimage", async (req, res) => {
@@ -266,6 +331,72 @@ app.post("/retrieveimage", async (req, res) => {
     console.error(error);
     res.status(500).send({
       message: "Error retrieving image data from the database",
+    });
+  }
+});
+
+//routes for retrieving all commands from the database
+app.post("/retrieveallcommands", async (req, res) => {
+  try {
+    payloadModel.find()
+      .then(data => {
+        // Exclude the first record
+        const recordsToDisplay = data.slice(1);
+
+        const imageID = recordsToDisplay.map(item => item.imageID);
+        const latitude = recordsToDisplay.map(item => item.latitude);
+        const longitude = recordsToDisplay.map(item => item.longitude);
+        const date = recordsToDisplay.map(item => item.date);
+        const status = recordsToDisplay.map(item => item.status);
+
+        res.json({
+          imageID: imageID,
+          latitude: latitude,
+          longitude: longitude,
+          date: date,
+          status: status
+        });
+
+        console.log("Records retrieved: ", recordsToDisplay);
+      })
+      .catch(err => res.json(err));
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      message: "Error retrieving command data from the database",
+    });
+  }
+});
+
+app.post("/deleterecord", async (req, res) => {
+ 
+  const ID = req.body.ID;
+
+  if (!ID) {
+    console.log("No ID was sent");
+    return res.status(400).send({
+      message: "Bad request. Image ID is required.",
+    });
+  }
+  
+  try {
+    const result = await payloadModel.deleteOne({ imageID: ID }).exec();
+  
+    if (result.deletedCount > 0) {
+      console.log("Record Successfully completed");
+      res.status(200).send({
+        message: "Record deleted successfully",
+      });
+    } else {
+      console.log("No matching record found for deletion.");
+      res.status(404).send({
+        message: "No matching record found for deletion",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      message: "Error deleting image data from the database",
     });
   }
 });

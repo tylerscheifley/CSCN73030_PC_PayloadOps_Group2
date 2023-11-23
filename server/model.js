@@ -3,7 +3,7 @@ const { Schema, model } = mongoose;
 
 const payloadSchema = new Schema({
     imageID: {
-        type: Number,
+        type: String,
         required: false,
     },
     latitude: {
@@ -25,6 +25,10 @@ const payloadSchema = new Schema({
     imageData: {
         type: Buffer,
         required: false,
+    },
+    status: {
+        type: String,
+        default: 'Unknown'
     }
 });
 

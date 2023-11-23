@@ -1,5 +1,7 @@
 import "./App.css";
 import React, { useState } from "react";
+import Popup from "reactjs-popup";
+import "reactjs-popup/dist/index.css";
 import { Canvas } from "@react-three/fiber";
 import {
   useGLTF,
@@ -216,6 +218,46 @@ function App() {
           </button>
         </div>
       </form>
+
+      <div className="input-group">
+        <br></br>
+        <Popup
+          trigger={<button type="submit" className="submit-btn">Database Tools</button>}
+          modal
+          nested
+          contentStyle={{ backgroundColor: 'lightblue', padding: '20px' }} 
+        >
+          {(close) => (
+            <div>
+              <div className="buttonLayoutCol">
+                <h1>Database Tools</h1>
+                <Popup
+                contentStyle={{ backgroundColor: 'lightblue', padding: '20px' }} 
+                trigger={<button type="submit" className="popup-btn">Create</button>} modal nested>
+                  {(close) => (
+                    <div>
+                      <h2>Longitude</h2>
+                      <input type="text"></input> <br></br>
+                      <h2>Latitude</h2>
+                      <input type="text"></input> <br></br>
+                      <h2>Image Upload</h2>
+                      <input type="file" id="myFile" name="filename"></input>
+                      <input type="submit"></input>
+                      <button onClick={() => close()}>Close</button>
+                    </div>
+                  )}
+                </Popup>
+                <div className="ButtonLayoutRow"> 
+                <button button type="submit" className="popup-btn">Read</button>
+                <button button type="submit" className="popup-btn">Update</button>
+                <button button type="submit" className="popup-btn">Delete</button>
+                <button button type="submit" className="popup-btn"onClick={() => close()}>Close</button>
+                </div>
+              </div>
+            </div>
+          )}
+        </Popup>
+      </div>
     </div>
   );
 }
