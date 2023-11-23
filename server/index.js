@@ -32,7 +32,11 @@ connectDB();
 // .catch(error=> console.error(error));
 
 //Default route
-app.get("/", (req, res) => {
+app.use(express.static("client/build"));
+
+// let the react app handle any unknown routes
+// serve up the index.html if Express doesn't recognize the route
+app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
 });
 
@@ -163,7 +167,7 @@ app.post("/payloadimage", async (req, res) => {
           });
 
           // Calling database function to save sorted Data to corresponding ID
-          await updateDocument(sortedData, ID);
+          await updateDocument(tempBuffer, ID);
         });
       });
     } else {
@@ -253,8 +257,7 @@ app.post("/retrieveallcommands", async (req, res) => {
           date: date,
           status: status
         });
-
-        console.log("Records retrieved: ", recordsToDisplay);
+        //console.log("Records retrieved: ", recordsToDisplay);
       })
       .catch(err => res.json(err));
   } catch (error) {
@@ -267,7 +270,6 @@ app.post("/retrieveallcommands", async (req, res) => {
 
 //Retrieves single image from the database given the image ID
 app.post("/retrieveimage", async (req, res) => {
- 
   const ID = req.body.ID;
 
   if (!ID) {
@@ -281,13 +283,8 @@ app.post("/retrieveimage", async (req, res) => {
     const imageDocument = await payloadModel.findOne({ imageID: ID }).lean().exec();
 
     if (imageDocument && imageDocument.imageData) {
-
-      // Send the binary image data as the response body
-      console.log(imageDocument.imageData)
-      res.status(200).send({
-        imageData: imageDocument.imageData,
-        filename: imageDocument.filename,
-      });
+      // Set the correct content type for the image
+      res.status(200).type('image/png').send(imageDocument.imageData);
     } else {
       console.log('Image data not found.');
       res.status(404).send({

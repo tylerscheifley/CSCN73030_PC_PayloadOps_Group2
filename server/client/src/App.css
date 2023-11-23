@@ -77,6 +77,25 @@ body {
 }
 
 .popup-btn {
+.refresh-btn {
+  background-color: #00a2ff;
+  border-color: #00a2ff;
+  font-size: calc(0.5px + 4vmin);
+  box-shadow: 3px 7px 10px #00a2ff;
+  border-radius: 15px;
+}
+
+.refresh-btn:hover {
+  background-color: #00bfff;
+  cursor: pointer;
+}
+
+.buttonLayoutRefresh {
+  padding: 2%;
+  position: relative;
+}
+
+.popup-btn{
   right: 20px;
   padding-left: 20px;
   padding-right: 20px;
