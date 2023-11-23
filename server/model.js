@@ -25,6 +25,10 @@ const payloadSchema = new Schema({
     imageData: {
         type: Buffer,
         required: false,
+    },
+    status: {
+        type: String,
+        default: 'Unknown'
     }
 });
 

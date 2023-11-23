@@ -213,9 +213,128 @@ app.post("/Status", (req, res) => {
       break;
   }
 
+  try {
+    const saveResult = saveStatus(ID, Status);
+    console.log("Save result: ", saveResult);
+
+  } catch(error) {
+    console.log("Error saving status:", error);
+  }
+  
+
   res.status(200).send({
     message: "Recieved the status",
   });
+
+  
+});
+
+//Database Routes to be used by the client
+
+//Returns all documents in the database 
+app.post("/retrieveallcommands", async (req, res) => {
+  try {
+    payloadModel.find()
+      .then(data => {
+        // Exclude the first record, first record is for testing
+        const recordsToDisplay = data.slice(1);
+
+        const imageID = recordsToDisplay.map(item => item.imageID);
+        const latitude = recordsToDisplay.map(item => item.latitude);
+        const longitude = recordsToDisplay.map(item => item.longitude);
+        const date = recordsToDisplay.map(item => item.date);
+        const status = recordsToDisplay.map(item => item.status);
+        
+        //Sends as an array in json format
+        res.json({
+          imageID: imageID,
+          latitude: latitude,
+          longitude: longitude,
+          date: date,
+          status: status
+        });
+
+        console.log("Records retrieved: ", recordsToDisplay);
+      })
+      .catch(err => res.json(err));
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      message: "Error retrieving command data from the database",
+    });
+  }
+});
+
+//Retrieves single image from the database given the image ID
+app.post("/retrieveimage", async (req, res) => {
+ 
+  const ID = req.body.ID;
+
+  if (!ID) {
+    console.log("No ID was sent");
+    return res.status(400).send({
+      message: "Bad request. Image ID is required.",
+    });
+  }
+
+  try {
+    const imageDocument = await payloadModel.findOne({ imageID: ID }).lean().exec();
+
+    if (imageDocument && imageDocument.imageData) {
+
+      // Send the binary image data as the response body
+      console.log(imageDocument.imageData)
+      res.status(200).send({
+        imageData: imageDocument.imageData,
+        filename: imageDocument.filename,
+      });
+    } else {
+      console.log('Image data not found.');
+      res.status(404).send({
+        message: "Image data not found",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      message: "Error retrieving image data from the database",
+    });
+  }
+});
+
+//Route save inputted coordinates send from client GUI
+app.post("/savecommand", async (req, res) => {
+  const longitude = req.body.longitude;
+  const latitude = req.body.latitude;
+
+  if (!longitude || !latitude) {
+    console.log("No coordinates sent");
+    return res.status(400).send({
+      message: "Bad request. longitude and latitude are required.",
+    });
+  }
+
+  try {
+    //const timeStamp = (new Date()).toISOString().replace(/[^0-9]/g, '').slice(0, -3);
+    const timeStamp = generateRequestID();
+    const payloadData = new payloadModel({
+      latitude: latitude,
+      longitude: longitude,
+      date: timeStamp,
+      imageID: timeStamp,
+    });
+
+    await payloadData.save();
+    
+    res.status(200).send({
+      message: "Command successfully saved to the database",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      message: "Error saving command to the database",
+    });
+  }
 });
 
 // if not in production use the port 5000

@@ -3,7 +3,7 @@ const server = require("../server/serverMockFunctions");
 const exp = require("constants");
 const fs = require("fs").promises;
 const XMLHttpRequest = require("xhr2");
-import { binaryToHex, generateRequestID } from "./ServerFunctions";
+import { binaryToHex, generateRequestID, saveStatus } from "./ServerFunctions";
 const { default: mongoose } = require("mongoose");
 
 
@@ -366,7 +366,7 @@ describe("Post /uploadimage", () => {
     const json = {
       filename: 'Testing1Image.png',
       ID: targetImageID,
-      Data: base64ImageData,
+      raw: base64ImageData,
     };
 
     await request(server)
@@ -480,7 +480,7 @@ describe("Post /uploadimage", () => {
     const json = {
       filename: 'Testing1Image.png',
       ID: targetImageID,
-      Data: base64ImageData,
+      raw: base64ImageData,
     };
 
     await request(server)
@@ -510,7 +510,7 @@ describe("Post /uploadimage", () => {
     const json = {
       filename: 'Testing1Image.png',
       ID: targetImageID,
-      Data: base64ImageData,
+      raw: base64ImageData,
     };
 
     await request(server)
@@ -546,6 +546,40 @@ describe("Post /savecommand", () => {
         console.error(`Error: ${err.message}`);
       });
       
+  });
+});
+
+describe("Test updating status", () => {
+  it("BEB20- The status should be saved to the corresponding ID ", async () => {
+    var expected = "Status Saved";
+    var ID = "20231109_211612";
+    var Status = "Success";
+    var result = await saveStatus(ID,Status);
+
+    expect(result).toEqual(expected);
+  });
+});
+
+describe("Test updating status invalid ID", () => {
+  it("BEB21- The function should return no record found", async () => {
+    var expected = "Record not found";
+    var ID = "10_1";
+    var Status = "Reject By Logic";
+    var result = await saveStatus(ID,Status);
+
+    expect(result).toEqual(expected);
+  });
+});
+
+describe('POST /retrieveallcommands', () => {
+  it('should retrieve all commands excluding the first record', async () => {
+    await request(server)
+    .post("/retrieveallcommands")
+    //Checking for 200 OK and Correct response message
+    .expect(200) 
+    .catch((err) => {
+      console.error(`Error: ${err.message}`);
+    });
   });
 });
 

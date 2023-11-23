@@ -9,7 +9,7 @@ app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ limit: '2mb', extended: true }));
 const fs = require("fs");
 const fps = require('fs/promises');
-const { generateRequestID, updateDocument } = require('./ServerFunctions');
+const { generateRequestID, updateDocument, saveStatus } = require('./ServerFunctions');
 const port = 3000;
 app.use(express.json());
 
@@ -179,6 +179,9 @@ app.post("/Status", (req, res) => {
       console.log("Request ID: " + ID + "\n" + "Status: " + "Unknown");
       break;
   }
+  //Save status to database
+  const saveResult = saveStatus(ID, Status);
+  console.log("Save result: ", saveResult);
 
   res.status(200).send({
     message: "Recieved the status",
@@ -255,7 +258,7 @@ app.post("/savecommand", async (req, res) => {
 
 
 app.post("/uploadimage", async (req, res) => {
-  const imageData = req.body.Data;
+  const imageData = req.body.raw;
   const ID = req.body.ID;
   //var Filename = `${ID}_Image.png`;
 
@@ -328,6 +331,39 @@ app.post("/retrieveimage", async (req, res) => {
     console.error(error);
     res.status(500).send({
       message: "Error retrieving image data from the database",
+    });
+  }
+});
+
+//routes for retrieving all commands from the database
+app.post("/retrieveallcommands", async (req, res) => {
+  try {
+    payloadModel.find()
+      .then(data => {
+        // Exclude the first record
+        const recordsToDisplay = data.slice(1);
+
+        const imageID = recordsToDisplay.map(item => item.imageID);
+        const latitude = recordsToDisplay.map(item => item.latitude);
+        const longitude = recordsToDisplay.map(item => item.longitude);
+        const date = recordsToDisplay.map(item => item.date);
+        const status = recordsToDisplay.map(item => item.status);
+
+        res.json({
+          imageID: imageID,
+          latitude: latitude,
+          longitude: longitude,
+          date: date,
+          status: status
+        });
+
+        console.log("Records retrieved: ", recordsToDisplay);
+      })
+      .catch(err => res.json(err));
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      message: "Error retrieving command data from the database",
     });
   }
 });

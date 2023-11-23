@@ -40,4 +40,32 @@ export async function updateDocument(binaryData, ID)
   return result;
 }
 
+export async function saveStatus(ID, Status)
+{
+  let result =" ";
+  try {
+    const payloadData = await payloadModel.findOneAndUpdate(
+      { imageID: ID }, // Search criteria
+      { $set: { status: Status} }, // Fields to update
+      { new: true, upsert: false } 
+    ).exec();
+    
+    if(payloadData)
+    {
+      console.log("Status successfully saved to the database")
+      result = "Status Saved";
+    }
+    else
+    {
+      console.log("Record not found.")
+      result = "Record not found"
+    }
+    
+  } catch (error) {
+    console.error(error);
+  }
+
+  return result;
+}
+
 
