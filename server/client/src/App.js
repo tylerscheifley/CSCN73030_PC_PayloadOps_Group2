@@ -55,6 +55,13 @@ const data = [
   },
 ];
 
+function ProcessCreateRecord() {
+  // const long = event.target("long").value;
+  // const lat = document.getElementById("lat").value;
+  // const file = document.getElementById("myFile").value;
+  // alert(long + "\n lat = " + lat);
+}
+
 function Model(props) {
   const { scene } = useGLTF("/source.glb");
   return <primitive object={scene} {...props} />;
@@ -64,12 +71,96 @@ function App() {
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
 
+  const [Popuplatitude, setPopupLatitude] = useState("");
+  const [Popuplongitude, setPopupLongitude] = useState("");
+  const [PopupID, setPopupID] = useState("");
+
   const handleLatitudeChange = (event) => {
     setLatitude(event.target.value);
   };
 
   const handleLongitudeChange = (event) => {
     setLongitude(event.target.value);
+  };
+
+  const handlePopupLatitudeChange = (event) => {
+    setPopupLatitude(event.target.value);
+  };
+
+  const handlePopupLongitudeChange = (event) => {
+    setPopupLongitude(event.target.value);
+  };
+
+  const handlePopupIdChange = (event) => {
+    setPopupID(event.target.value);
+  };
+
+  const handlePopupSubmit = (event) => {
+    if (!Popuplatitude || !Popuplongitude) {
+      alert("Values not entered");
+      return;
+    }
+
+    const data = {
+      longitude: Popuplongitude,
+      latitude: Popuplatitude,
+    };
+
+    fetch("/savecommand", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        // Check if the response is successful
+        if (response.ok) {
+          alert("Request successful");
+        } else {
+          // If the response is not successful, get the response code and message
+          const { status, statusText } = response;
+          alert(`Request failed with status: ${status}, ${statusText}`);
+        }
+      })
+      .catch((error) => {
+        // Handle any errors that occurred during the request
+        alert(`An error occurred: ${error.message}`);
+      });
+  };
+
+  const handlePopupDelete = (event) => {
+    if (!PopupID) {
+      alert("No id provided");
+      return;
+    }
+
+    // send the data to the server in json
+    const data = {
+      ID: PopupID,
+    };
+
+    fetch("/deleterecord", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        // Check if the response is successful
+        if (response.ok) {
+          alert("Request successful");
+        } else {
+          // If the response is not successful, get the response code and message
+          const { status, statusText } = response;
+          alert(`Request failed with status: ${status}, ${statusText}`);
+        }
+      })
+      .catch((error) => {
+        // Handle any errors that occurred during the request
+        alert(`An error occurred: ${error.message}`);
+      });
   };
 
   const handleSubmit = (event) => {
@@ -93,18 +184,15 @@ function App() {
     });
   };
 
-  const [imagePath, setImagePath] = useState('./defaultNoImage.png');
+  const [imagePath, setImagePath] = useState("./defaultNoImage.png");
 
   const handleImgView = (imgName, imgStatus) => {
-    if(imgStatus == "Success")
-    {
+    if (imgStatus === "Success") {
       setImagePath(imgName + ".jpg");
-    }
-    else
-    {
+    } else {
       setImagePath("./defaultNoImage.png");
     }
-  }
+  };
 
   return (
     <div className="App">
@@ -129,8 +217,7 @@ function App() {
         </Canvas>
       </div>
 
-      <div className="shape-spacer">
-      </div>
+      <div className="shape-spacer"></div>
 
       <div className="Table-Spacing">
         <table className="table">
@@ -145,10 +232,24 @@ function App() {
           <tbody>
             {data.map((val, key) => (
               <tr key={key}>
-                <td onClick={() => handleImgView(val.imageID, val.status)}>🔎 {val.imageID}</td>
-                <td onClick={() => handleImgView(val.imageID, val.status)}>📅 {val.time}</td>
-                <td onClick={() => handleImgView(val.imageID, val.status)}>🌍 {val.coordinates}</td>
-                <td className="statusContent" onClick={() => handleImgView(val.imageID, val.status)}> <span className={`status status-${val.status}`}>{val.status}</span></td>
+                <td onClick={() => handleImgView(val.imageID, val.status)}>
+                  🔎 {val.imageID}
+                </td>
+                <td onClick={() => handleImgView(val.imageID, val.status)}>
+                  📅 {val.time}
+                </td>
+                <td onClick={() => handleImgView(val.imageID, val.status)}>
+                  🌍 {val.coordinates}
+                </td>
+                <td
+                  className="statusContent"
+                  onClick={() => handleImgView(val.imageID, val.status)}
+                >
+                  {" "}
+                  <span className={`status status-${val.status}`}>
+                    {val.status}
+                  </span>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -222,36 +323,96 @@ function App() {
       <div className="input-group">
         <br></br>
         <Popup
-          trigger={<button type="submit" className="submit-btn">Database Tools</button>}
+          trigger={
+            <button type="submit" className="submit-btn">
+              Database Tools
+            </button>
+          }
           modal
           nested
-          contentStyle={{ backgroundColor: 'lightblue', padding: '20px' }} 
+          contentStyle={{ backgroundColor: "lightblue", padding: "20px" }}
         >
           {(close) => (
             <div>
               <div className="buttonLayoutCol">
                 <h1>Database Tools</h1>
                 <Popup
-                contentStyle={{ backgroundColor: 'lightblue', padding: '20px' }} 
-                trigger={<button type="submit" className="popup-btn">Create</button>} modal nested>
+                  contentStyle={{
+                    backgroundColor: "lightblue",
+                    padding: "20px",
+                  }}
+                  trigger={
+                    <button type="submit" className="popup-btn">
+                      Create
+                    </button>
+                  }
+                  modal
+                  nested
+                >
                   {(close) => (
                     <div>
                       <h2>Longitude</h2>
-                      <input type="text"></input> <br></br>
+                      <input
+                        onChange={handlePopupLongitudeChange}
+                        value={Popuplongitude}
+                        className="textbox"
+                        type="text"
+                        data-testid="latitude-input2"
+                        placeholder="Enter latitude"
+                      ></input>{" "}
+                      <br></br>
                       <h2>Latitude</h2>
-                      <input type="text"></input> <br></br>
-                      <h2>Image Upload</h2>
-                      <input type="file" id="myFile" name="filename"></input>
-                      <input type="submit"></input>
+                      <input
+                        onChange={handlePopupLatitudeChange}
+                        value={Popuplatitude}
+                        className="textbox"
+                        type="text"
+                        data-testid="latitude-input2"
+                        placeholder="Enter latitude"
+                      ></input>{" "}
+                      <br></br>
+                      <input type="submit" onClick={handlePopupSubmit}></input>
                       <button onClick={() => close()}>Close</button>
                     </div>
                   )}
                 </Popup>
-                <div className="ButtonLayoutRow"> 
-                <button button type="submit" className="popup-btn">Read</button>
-                <button button type="submit" className="popup-btn">Update</button>
-                <button button type="submit" className="popup-btn">Delete</button>
-                <button button type="submit" className="popup-btn"onClick={() => close()}>Close</button>
+                <br></br>
+                <div className="ButtonLayoutRow">
+                  <Popup
+                    contentStyle={{
+                      backgroundColor: "lightblue",
+                      padding: "20px",
+                    }}
+                    trigger={
+                      <button type="submit" className="popup-btn">
+                        Delete
+                      </button>
+                    }
+                    modal
+                    nested
+                  >
+                    {(close) => (
+                      <div>
+                        <h2>ID</h2>
+                        <input
+                          onChange={handlePopupIdChange}
+                          value={PopupID}
+                          type="text"
+                        ></input>{" "}
+                        <br></br>
+                        <button onClick={handlePopupDelete}>Submit</button>
+                        <button onClick={() => close()}>Close</button>
+                      </div>
+                    )}
+                  </Popup>
+                  <button
+                    button
+                    type="submit"
+                    className="popup-btn"
+                    onClick={() => close()}
+                  >
+                    Close
+                  </button>
                 </div>
               </div>
             </div>
