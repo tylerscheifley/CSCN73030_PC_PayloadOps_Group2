@@ -213,23 +213,14 @@ function App() {
           // Create a new FileReader
           const reader = new FileReader();
 
+          reader.onloadend = () => {
+            // When the reading is done, set the image path to the data URL
+            const dataUrl = reader.result;
+            setImagePath(dataUrl);
+          };
+
           // Read the blob as data URL
           reader.readAsDataURL(blob);
-          console.log("GSDDDDDDDDDDDDDDDDDDDDDDDD", blob);
-
-          // When the reading is done, create an anchor element to trigger download
-          reader.onloadend = () => {
-            const dataUrl = reader.result;
-
-            // Create an anchor element
-            const a = document.createElement("a");
-            a.href = dataUrl;
-            a.download = "image.png"; // You can customize the filename here
-
-            // Trigger a click on the anchor element to start the download
-            a.click();
-          };
-          setImagePath("image.png");
         })
         .catch((error) => {
           console.error("Error fetching image:", error.message);

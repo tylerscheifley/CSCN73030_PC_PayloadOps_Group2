@@ -2,8 +2,8 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-app.use(express.json({ limit: '2mb' }));
-app.use(express.urlencoded({ limit: '2mb', extended: true }));
+app.use(express.json({ limit: "2mb" }));
+app.use(express.urlencoded({ limit: "2mb", extended: true }));
 //Database connection
 const mongoose = require("mongoose");
 const connectDB = require("./dbConnection");
@@ -95,34 +95,42 @@ app.post("/payloadimage", async (req, res) => {
 
   // Unique file names created
   const imagePath = `../server/${ID}_Image.png`;
-  const tempTxtPath = `../server/${ID}_Temp.txt`; 
+  const tempTxtPath = `../server/${ID}_Temp.txt`;
 
   // First checking to ensure image data isn't null
-  if (!ImageData || !ID || sequenceNumber === undefined || finFlag === undefined) {
+  if (
+    !ImageData ||
+    !ID ||
+    sequenceNumber === undefined ||
+    finFlag === undefined
+  ) {
     console.log("No image data sent");
     return res.status(400).send({
-      message: "Bad request. Image data, ID, Sequence, and Fin flag are required.",
+      message:
+        "Bad request. Image data, ID, Sequence, and Fin flag are required.",
     });
   }
 
   // Convert ImageData hex data to binary
-  const imageBuffer = Buffer.from(ImageData, 'hex');
-  const formatedContent = `${sequenceNumber},${imageBuffer.toString('hex')}\n`;
+  const imageBuffer = Buffer.from(ImageData, "hex");
+  const formatedContent = `${sequenceNumber},${imageBuffer.toString("hex")}\n`;
 
   // Storing received image data into temp text file until fin flag is raised
-  fs.appendFile(tempTxtPath, formatedContent, 'binary', (err) => {
+  fs.appendFile(tempTxtPath, formatedContent, "binary", (err) => {
     if (err) {
       console.error("Error writing the binary image data:", err);
       return res.status(500).send({
         message: "Error writing image data",
       });
     }
-    console.log(`Image buffer ${ID} sequence number ${sequenceNumber} written to temp file`);
+    console.log(
+      `Image buffer ${ID} sequence number ${sequenceNumber} written to temp file`
+    );
 
     // Writing image can begin once fin flag is raised
     if (finFlag) {
-      // Reading the entire file of temp txt file 
-      fs.readFile(tempTxtPath, 'binary', (err, data) => {
+      // Reading the entire file of temp txt file
+      fs.readFile(tempTxtPath, "binary", (err, data) => {
         if (err) {
           console.log("Error reading temp file: ", err);
           return res.status(500).send({
@@ -131,14 +139,18 @@ app.post("/payloadimage", async (req, res) => {
         }
 
         // Sorting the data based on the sequence number
-        const sortedData = data.split('\n')
-          .filter(line => line.trim() !== '')
-          .map(line => {
-            const [seqNum, hexData] = line.split(',');
-            return { seqNum: parseInt(seqNum), binaryData: Buffer.from(hexData, 'hex') };
+        const sortedData = data
+          .split("\n")
+          .filter((line) => line.trim() !== "")
+          .map((line) => {
+            const [seqNum, hexData] = line.split(",");
+            return {
+              seqNum: parseInt(seqNum),
+              binaryData: Buffer.from(hexData, "hex"),
+            };
           })
           .sort((a, b) => a.seqNum - b.seqNum)
-          .map(item => item.binaryData);
+          .map((item) => item.binaryData);
 
         // Concatenating sorted data into a single Buffer
 
@@ -146,7 +158,7 @@ app.post("/payloadimage", async (req, res) => {
         const tempBuffer = Buffer.concat(sortedData);
 
         // Writing image file from sorted data
-        fs.writeFile(imagePath, tempBuffer, 'binary', async (err) => {
+        fs.writeFile(imagePath, tempBuffer, "binary", async (err) => {
           if (err) {
             console.error("Error writing the image:", err);
             return res.status(500).send("There was an error writing the image");
@@ -157,7 +169,7 @@ app.post("/payloadimage", async (req, res) => {
             message: "Received the complete image data",
           });
 
-          // Deleting temp txt file 
+          // Deleting temp txt file
           fs.unlink(tempTxtPath, (err) => {
             if (err) {
               console.error("Error deleting temp file:", err);
@@ -220,46 +232,43 @@ app.post("/Status", async (req, res) => {
   try {
     const saveResult = await saveStatus(ID, Status);
     console.log("Save result: ", saveResult);
-
-  } catch(error) {
+  } catch (error) {
     console.log("Error saving status:", error);
   }
-  
 
   res.status(200).send({
     message: "Recieved the status",
   });
-
-  
 });
 
 //Database Routes to be used by the client
 
-//Returns all documents in the database 
+//Returns all documents in the database
 app.post("/retrieveallcommands", async (req, res) => {
   try {
-    payloadModel.find()
-      .then(data => {
+    payloadModel
+      .find()
+      .then((data) => {
         // Exclude the first record, first record is for testing
         const recordsToDisplay = data.slice(1);
 
-        const imageID = recordsToDisplay.map(item => item.imageID);
-        const latitude = recordsToDisplay.map(item => item.latitude);
-        const longitude = recordsToDisplay.map(item => item.longitude);
-        const date = recordsToDisplay.map(item => item.date);
-        const status = recordsToDisplay.map(item => item.status);
-        
+        const imageID = recordsToDisplay.map((item) => item.imageID);
+        const latitude = recordsToDisplay.map((item) => item.latitude);
+        const longitude = recordsToDisplay.map((item) => item.longitude);
+        const date = recordsToDisplay.map((item) => item.date);
+        const status = recordsToDisplay.map((item) => item.status);
+
         //Sends as an array in json format
         res.json({
           imageID: imageID,
           latitude: latitude,
           longitude: longitude,
           date: date,
-          status: status
+          status: status,
         });
         //console.log("Records retrieved: ", recordsToDisplay);
       })
-      .catch(err => res.json(err));
+      .catch((err) => res.json(err));
   } catch (error) {
     console.error(error);
     res.status(500).send({
@@ -268,7 +277,7 @@ app.post("/retrieveallcommands", async (req, res) => {
   }
 });
 
-//Retrieves single image from the database given the image ID
+// Retrieves single image from the database given the image ID
 app.post("/retrieveimage", async (req, res) => {
   const ID = req.body.ID;
 
@@ -280,13 +289,16 @@ app.post("/retrieveimage", async (req, res) => {
   }
 
   try {
-    const imageDocument = await payloadModel.findOne({ imageID: ID }).lean().exec();
+    const imageDocument = await payloadModel
+      .findOne({ imageID: ID })
+      .lean()
+      .exec();
 
     if (imageDocument && imageDocument.imageData) {
       // Set the correct content type for the image
-      res.status(200).type('image/png').send(imageDocument.imageData);
+      res.status(200).type("image/png").send(imageDocument.imageData.buffer);
     } else {
-      console.log('Image data not found.');
+      console.log("Image data not found.");
       res.status(404).send({
         message: "Image data not found",
       });
@@ -322,7 +334,7 @@ app.post("/savecommand", async (req, res) => {
     });
 
     await payloadData.save();
-    
+
     res.status(200).send({
       message: "Command successfully saved to the database",
     });
@@ -336,7 +348,6 @@ app.post("/savecommand", async (req, res) => {
 
 //Delete record provided image ID
 app.post("/deleterecord", async (req, res) => {
- 
   const ID = req.body.ID;
 
   if (!ID) {
@@ -345,10 +356,10 @@ app.post("/deleterecord", async (req, res) => {
       message: "Bad request. Image ID is required.",
     });
   }
-  
+
   try {
     const result = await payloadModel.deleteOne({ imageID: ID }).exec();
-  
+
     if (result.deletedCount > 0) {
       console.log("Record Successfully completed");
       res.status(200).send({
