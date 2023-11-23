@@ -60,24 +60,21 @@ test("FEB04-Checking text waiting for Submit Text", () => {
   expect(PayloadElement).toBeInTheDocument();
 });
 
-test("FEB05-Checking text waiting for Coordiantes", () => {
+test("FEB05-Checking text request image", () => {
   render(<App />);
-  render(<h1 style={{ paddingLeft: 30 }}>PC-Payload Ops</h1>);
-  const PayloadElement = screen.getByText(/10:22:01-2023-10-18/i);
+  const PayloadElement = screen.getByText(/📄 Request an image from the database.../);
   expect(PayloadElement).toBeInTheDocument();
 });
 
-test("FEB06-Checking text waiting for Time", () => {
+test("FEB06-Checking text image id", () => {
   render(<App />);
-  render(<h1 style={{ paddingLeft: 30 }}>PC-Payload Ops</h1>);
-  const PayloadElement = screen.getByText(/10:22:01-2023-10-18/i);
+  const PayloadElement = screen.getByText(/Enter the image id below:/i);
   expect(PayloadElement).toBeInTheDocument();
 });
 
-test("FEB07-Checking text waiting for ID", () => {
+test("FEB07-Checking image present", () => {
   render(<App />);
-  render(<h1 style={{ paddingLeft: 30 }}>PC-Payload Ops</h1>);
-  const PayloadElement = screen.getByText(/I1/i);
+  const PayloadElement = screen.getByAltText(/satimg/i);
   expect(PayloadElement).toBeInTheDocument();
 });
 
