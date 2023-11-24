@@ -1,5 +1,6 @@
 //needed dotenv for connection URI
 require("dotenv").config();
+const axios = require("axios");
 const express = require("express");
 const app = express();
 app.use(express.json({ limit: "2mb" }));
@@ -17,9 +18,10 @@ app.use(express.json());
 // let the react app to handle any unknown routes
 // serve up the index.html if express does'nt recognize the route
 const path = require("path");
-
 // Calling dbconnection.js database connection
 connectDB();
+const fs = require("fs");
+const serverfunction = require("./ServerFunctions");
 
 //let imageCollection;
 
@@ -40,49 +42,62 @@ app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
 });
 
-app.post("/request", (req, res) => {
-  var Longitude = req.body.Longitude;
-  var Latitude = req.body.Latitude;
+app.post("/request", async (req, res) => {
+  const longitude = req.body.Longitude;
+  const latitude = req.body.Latitude;
 
-  console.log("Request recieved");
-  console.log("Longitude: " + Longitude);
-  console.log("Latitude: " + Latitude);
+  console.log("Request received");
+  console.log("Longitude: " + longitude);
+  console.log("Latitude: " + latitude);
 
-  if (!Longitude || !Latitude) {
+  if (!longitude || !latitude) {
     console.log("Failed the check...");
     return res.status(400).send({
       message: "Bad request. Longitude and Latitude are required.",
     });
   }
 
-  // var GroundStationPayloadIp = "blank";
-  // var id = 0; //generateRequestID();
+  const groundStationPayloadIp = "http://10.144.111.235:5000";
+  const id = serverfunction.generateRequestID();
 
-  // var json = {
-  //   ID: id,
-  //   Longitude: Longitude,
-  //   Latitude: Latitude,
-  // };
+  const json = {
+    ID: id,
+    Longitude: longitude,
+    Latitude: latitude,
+    NumberOfImages: 2, // remove
+  };
 
-  // //send a post request to the GroundStationPayload with a json object
-  // var options = {
-  //   hostname: GroundStationPayloadIp,
-  //   port: 8080,
-  //   path: "/request",
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  //   body: JSON.stringify(json),
-  // };
+  try {
+    const response = await axios.post(
+      `${groundStationPayloadIp}/request`,
+      json,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-  // var req = http.request(options, (res) => {
-  //   console.log(`statusCode: ${res.statusCode}`);
+    console.log(`statusCode: ${response.status}`);
+    console.log(response.data);
 
-  //   res.on("data", (d) => {
-  //     process.stdout.write(d);
-  //   });
-  // });
+    res.status(200).send(response.data);
+
+    // Handle the response as needed
+    //const timeStamp = (new Date()).toISOString().replace(/[^0-9]/g, '').slice(0, -3);
+    const timeStamp = serverfunction.generateRequestID();
+    const payloadData = new payloadModel({
+      latitude: latitude,
+      longitude: longitude,
+      date: timeStamp,
+      imageID: timeStamp,
+    });
+
+    payloadData.save();
+  } catch (error) {
+    console.error("Error:", error.message);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 //Get Image from payload
@@ -179,7 +194,7 @@ app.post("/payloadimage", async (req, res) => {
           });
 
           // Calling database function to save sorted Data to corresponding ID
-          await updateDocument(tempBuffer, ID);
+          await serverfunction.updateDocument(tempBuffer, ID);
         });
       });
     } else {
@@ -230,7 +245,7 @@ app.post("/Status", async (req, res) => {
   }
 
   try {
-    const saveResult = await saveStatus(ID, Status);
+    const saveResult = await serverfunction.saveStatus(ID, Status);
     console.log("Save result: ", saveResult);
   } catch (error) {
     console.log("Error saving status:", error);
@@ -325,7 +340,7 @@ app.post("/savecommand", async (req, res) => {
 
   try {
     //const timeStamp = (new Date()).toISOString().replace(/[^0-9]/g, '').slice(0, -3);
-    const timeStamp = generateRequestID();
+    const timeStamp = serverfunction.generateRequestID();
     const payloadData = new payloadModel({
       latitude: latitude,
       longitude: longitude,
