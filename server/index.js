@@ -57,7 +57,7 @@ app.post("/request", async (req, res) => {
     });
   }
 
-  const groundStationPayloadIp = "http://10.144.111.235:5000";
+  const groundStationPayloadIp = "http://25.55.209.53:5000";
   const id = serverfunction.generateRequestID();
 
   const json = {
@@ -81,8 +81,6 @@ app.post("/request", async (req, res) => {
     console.log(`statusCode: ${response.status}`);
     console.log(response.data);
 
-    res.status(200).send(response.data);
-
     // Handle the response as needed
     //const timeStamp = (new Date()).toISOString().replace(/[^0-9]/g, '').slice(0, -3);
     const timeStamp = serverfunction.generateRequestID();
@@ -93,7 +91,7 @@ app.post("/request", async (req, res) => {
       imageID: timeStamp,
     });
 
-    payloadData.save();
+    await payloadData.save();
   } catch (error) {
     console.error("Error:", error.message);
     res.status(500).send("Internal Server Error");
@@ -131,7 +129,7 @@ app.post("/payloadimage", async (req, res) => {
   const formatedContent = `${sequenceNumber},${imageBuffer.toString("hex")}\n`;
 
   // Storing received image data into temp text file until fin flag is raised
-  fs.appendFile(tempTxtPath, formatedContent, "binary", (err) => {
+  fs.appendFile(tempTxtPath, formatedContent, (err) => {
     if (err) {
       console.error("Error writing the binary image data:", err);
       return res.status(500).send({
@@ -143,9 +141,9 @@ app.post("/payloadimage", async (req, res) => {
     );
 
     // Writing image can begin once fin flag is raised
-    if (finFlag) {
+    if (finFlag === true) {
       // Reading the entire file of temp txt file
-      fs.readFile(tempTxtPath, "binary", (err, data) => {
+      fs.readFile(tempTxtPath, (err, data) => {
         if (err) {
           console.log("Error reading temp file: ", err);
           return res.status(500).send({
@@ -153,49 +151,61 @@ app.post("/payloadimage", async (req, res) => {
           });
         }
 
-        // Sorting the data based on the sequence number
-        const sortedData = data
-          .split("\n")
-          .filter((line) => line.trim() !== "")
-          .map((line) => {
-            const [seqNum, hexData] = line.split(",");
-            return {
-              seqNum: parseInt(seqNum),
-              binaryData: Buffer.from(hexData, "hex"),
-            };
-          })
-          .sort((a, b) => a.seqNum - b.seqNum)
-          .map((item) => item.binaryData);
+        // // Sorting the data based on the sequence number
+        // const sortedData = data
+        //   .split("\n")
+        //   .filter((line) => line.trim() !== "")
+        //   .map((line) => {
+        //     const [seqNum, hexData] = line.split(",");
+        //     return {
+        //       seqNum: parseInt(seqNum),
+        //       binaryData: hexData,
+        //     };
+        //   })
+        //   .sort((a, b) => a.seqNum - b.seqNum)
+        //   .map((item) => item.binaryData);
 
         // Concatenating sorted data into a single Buffer
 
         //console.log("final sortedData: ", sortedData);
-        const tempBuffer = Buffer.concat(sortedData);
+        const tempBuffer = "" + data;
 
-        // Writing image file from sorted data
-        fs.writeFile(imagePath, tempBuffer, "binary", async (err) => {
-          if (err) {
-            console.error("Error writing the image:", err);
-            return res.status(500).send("There was an error writing the image");
-          }
-          console.log(`Image ${ID} successfully created`);
-          // 200 OK upon the creation of the image
-          res.status(200).send({
-            message: "Received the complete image data",
-          });
-
-          // Deleting temp txt file
-          fs.unlink(tempTxtPath, (err) => {
-            if (err) {
-              console.error("Error deleting temp file:", err);
-            } else {
-              console.log(`Temp file ${tempTxtPath} deleted`);
-            }
-          });
-
-          // Calling database function to save sorted Data to corresponding ID
-          await serverfunction.updateDocument(tempBuffer, ID);
+        const outputFile = fs.createWriteStream(imagePath, {
+          encoding: "binary",
         });
+
+        for (let i = 0; i < tempBuffer.length; i += 2) {
+          const byteString = tempBuffer.substr(i, 2);
+          const byte = parseInt(byteString, 16);
+          outputFile.write(Buffer.from([byte]));
+        }
+
+        outputFile.close();
+
+        // // Writing image file from sorted data
+        // fs.writeFile(imagePath, tempBuffer, "binary", async (err) => {
+        //   if (err) {
+        //     console.error("Error writing the image:", err);
+        //     return res.status(500).send("There was an error writing the image");
+        //   }
+        //   console.log(`Image ${ID} successfully created`);
+        //   // 200 OK upon the creation of the image
+        //   res.status(200).send({
+        //     message: "Received the complete image data",
+        //   });
+
+        //   // Deleting temp txt file
+        //   fs.unlink(tempTxtPath, (err) => {
+        //     if (err) {
+        //       console.error("Error deleting temp file:", err);
+        //     } else {
+        //       console.log(`Temp file ${tempTxtPath} deleted`);
+        //     }
+        //   });
+
+        //   // Calling database function to save sorted Data to corresponding ID
+        //   await serverfunction.updateDocument(tempBuffer, ID);
+        // });
       });
     } else {
       // When the flag is not raised, send status 200 OK single packet received
@@ -217,18 +227,23 @@ app.post("/Status", async (req, res) => {
       message: "Bad request.ID and Status is required.",
     });
   }
+  var stringStatus;
 
   switch (parseInt(Status)) {
     case 0:
       console.log("Request ID: " + ID + "\n" + "Status: " + "Success");
+      stringStatus = "Success";
+
       break;
     case 1:
       console.log("Request ID: " + ID + "\n" + "Status: " + "Reject By Logic");
+      stringStatus = "Reject By Logic";
       break;
     case 2:
       console.log(
         "Request ID: " + ID + "\n" + "Status: " + "Reject By Structure"
       );
+      stringStatus = "Reject By Structure";
       break;
     case 3:
       console.log(
@@ -238,14 +253,17 @@ app.post("/Status", async (req, res) => {
           "Status: " +
           "Rejected because it was lost."
       );
+      stringStatus = "lost";
       break;
     default:
       console.log("Request ID: " + ID + "\n" + "Status: " + "Unknown");
+      stringStatus = "unknown";
       break;
   }
 
   try {
-    const saveResult = await serverfunction.saveStatus(ID, Status);
+    console.log("BEFORE ID " + ID + "Status" + stringStatus);
+    const saveResult = await serverfunction.saveStatus(ID, stringStatus);
     console.log("Save result: ", saveResult);
   } catch (error) {
     console.log("Error saving status:", error);
