@@ -65,7 +65,7 @@ app.post("/request", async (req, res) => {
       latitude: latitude,
       longitude: longitude,
       date: timeStamp,
-      imageID: id,
+      imageID: timeStamp,
     });
 
     await payloadData.save();
@@ -78,6 +78,7 @@ app.post("/request", async (req, res) => {
         },
       }
     );
+
     console.log(`statusCode: ${response.status}`);
     console.log(response.data);
   } catch (error) {
@@ -85,7 +86,6 @@ app.post("/request", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-
 //Get Image from payload
 //Updated POST payloadimage
 // Get Image from payload
