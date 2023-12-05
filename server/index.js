@@ -263,6 +263,7 @@ app.post("/Status", async (req, res) => {
 
   try {
     console.log("BEFORE ID " + ID + "Status" + stringStatus);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     const saveResult = await serverfunction.saveStatus(ID, stringStatus);
     console.log("Save result: ", saveResult);
   } catch (error) {
