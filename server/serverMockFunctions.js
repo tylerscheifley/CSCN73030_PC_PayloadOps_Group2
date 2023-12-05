@@ -34,20 +34,6 @@ app.post("/GroundStationPayload", (req, res) => {
   });
 });
 
-// app.post("/payloadimage", function (req, res) {
-//   var imagePath = "../server/TestingImage.png";
-
-//   fs.readFile(imagePath, (err, data) => {
-//     if (err) {
-//       res.status(500).send("There was an error reading the image");
-//     } else {
-//       res.setHeader("Content-Type", "image/jpeg");
-//       res.status(200).send(data);
-//       console.log(data);
-//     }
-//   });
-// });
-
 //Updated POST payloadimage
 app.post("/payloadimage", async (req, res) => {
   const ImageData = req.body.raw;
@@ -191,35 +177,6 @@ app.post("/Status", (req, res) => {
 const server = app.listen(port, () =>
   console.log(`Test Server is listening on port ${port}!`)
 );
-
-
-//Database Routes 
-
-// async function getNextSequenceValue(sequenceName) {
-//   try {
-//     const sequenceDocument = await payloadModel.findOneAndUpdate(
-//       { _id: sequenceName },
-//       { $inc: { commandID: 1 } },
-//       { new: true, upsert: true }
-//     );
-
-//     if (!sequenceDocument) {
-//       // If sequenceDocument is null (no document found), create a new one
-//       const newSequenceDocument = await payloadModel.create({ _id: sequenceName, commandID: 1 });
-//       return newSequenceDocument;
-//     }
-
-//     return sequenceDocument;
-//   } catch (error) {
-//     console.error(error);
-//     throw error; // Handle the error according to your use case
-//   }
-// }
-
-
-
-
-
 
 //Intented to be called by the front end for saving the input of coordinates to be send
 app.post("/savecommand", async (req, res) => {
