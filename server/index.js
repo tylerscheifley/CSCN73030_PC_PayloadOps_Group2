@@ -163,36 +163,40 @@ app.post("/payloadimage", async (req, res) => {
         });
 
         // Loop through hex string, convert to binary, and write to binary output file
-        let accumulatedBuffer = Buffer.alloc(0);
+        const accumulatedBytes = [];
+
         for (let i = 0; i < concatenatedData.length; i += 2) {
           const byteString = concatenatedData.slice(i, i + 2);
           const byte = parseInt(byteString, 16);
+
           imageFile.write(Buffer.from([byte]));
-          accumulatedBuffer = Buffer.concat([accumulatedBuffer, Buffer.from([byte])]);
+          accumulatedBytes.push(byte);
         }
 
+        const accumulatedBuffer = Buffer.from(accumulatedBytes);
+
         imageFile.close();
+
+        // Deleting temp txt file
+        fs.unlink(tempTxtPath, (err) => {
+          if (err) {
+            console.error("Error deleting temp file:", err);
+          } else {
+            console.log(`Temp file ${tempTxtPath} deleted`);
+          }
+        });
+
+        // Calling database function to save sorted Data to corresponding ID
+        res.status(200).send({
+          message: "Received image received",
+        });
+        await serverfunction.updateDocument(accumulatedBuffer, ID);
       } catch (error) {
         console.log("Error writing image data to file");
         res.status(500).send({
           message: "Error writing image data to file",
         });
       }
-
-      // Deleting temp txt file
-      fs.unlink(tempTxtPath, (err) => {
-        if (err) {
-          console.error("Error deleting temp file:", err);
-        } else {
-          console.log(`Temp file ${tempTxtPath} deleted`);
-        }
-      });
-
-      // Calling database function to save sorted Data to corresponding ID
-      res.status(200).send({
-        message: "Received image received",
-      });
-      await serverfunction.updateDocument(accumulatedBuffer, ID);
     });
   } else {
     // When the flag is not raised, send status 200 OK single packet received
