@@ -60,15 +60,15 @@ test("FEB04-Checking text waiting for Submit Text", () => {
   expect(PayloadElement).toBeInTheDocument();
 });
 
-test("FEB05-Checking text request image", () => {
+test("FEB05-Checking table refresh", () => {
   render(<App />);
-  const PayloadElement = screen.getByText(/📄 Request an image from the database.../);
+  const PayloadElement = screen.getByText(/🔄/);
   expect(PayloadElement).toBeInTheDocument();
 });
 
-test("FEB06-Checking text image id", () => {
+test("FEB06-Checking database tools", () => {
   render(<App />);
-  const PayloadElement = screen.getByText(/Enter the image id below:/i);
+  const PayloadElement = screen.getByText(/Database Tools/i);
   expect(PayloadElement).toBeInTheDocument();
 });
 
@@ -78,8 +78,32 @@ test("FEB07-Checking image present", () => {
   expect(PayloadElement).toBeInTheDocument();
 });
 
+test("FEB08-Checking table Image ID", () => {
+  render(<App />);
+  const PayloadElement = screen.getByText(/Image ID/i);
+  expect(PayloadElement).toBeInTheDocument();
+});
 
-test("button click should trigger getData function", () => {
+test("FEB09-Checking table Time", () => {
+  render(<App />);
+  const PayloadElement = screen.getByText(/Time/i);
+  expect(PayloadElement).toBeInTheDocument();
+});
+
+test("FEB10-Checking table Coordinates", () => {
+  render(<App />);
+  const PayloadElement = screen.getByText(/Coordinates/i);
+  expect(PayloadElement).toBeInTheDocument();
+});
+
+test("FEB11-Checking table Status", () => {
+  render(<App />);
+  const PayloadElement = screen.getByText(/Status/i);
+  expect(PayloadElement).toBeInTheDocument();
+});
+
+
+test("FEB12-button click should trigger getData function", () => {
   // Create a jest mock function
   const alertMock = jest.spyOn(window, "alert").mockImplementation(() => {});
 
