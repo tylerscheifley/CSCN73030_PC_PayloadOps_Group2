@@ -3,10 +3,13 @@ const server = require("../server/serverMockFunctions");
 const exp = require("constants");
 const fs = require("fs").promises;
 const XMLHttpRequest = require("xhr2");
-import { binaryToHex, generateRequestID, saveStatus } from "./ServerFunctions";
+const {
+  generateRequestID,
+  updateDocument,
+  saveStatus,
+} = require("./ServerFunctions");
 const { default: mongoose } = require("mongoose");
 const payloadModel = require("./model");
-
 
 describe("POST /GroundStationPayload", () => {
   it("BEB01- Test a proper payload request with Ground Station Payload Server Mock should return a 200 OK", async () => {
@@ -56,7 +59,6 @@ describe("POST /GroundStationPayload", () => {
         // If there's an error in the request, it will be caught here
         console.error(`Error: ${err.message}`);
       });
-
   });
 });
 
@@ -85,7 +87,6 @@ describe("POST /GroundStationPayload", () => {
 // });
 // POST PayloadImage, null data being sent
 describe("POST /payloadimage", () => {
-
   it("BEB03- Send Invalid request with no image data, expect 400 response", async () => {
     //ID is used to set the name of the image since its unique
     const json = {
@@ -278,7 +279,7 @@ describe("Post /payloadimage", () => {
     const imagePath = "../server/TestingImage.png";
     //Need to convert binary data to base64 for server to write correctly
     const imageData = await fs.readFile(imagePath);
-    const hexString = imageData.toString('hex'); // Read the image file asynchronously
+    const hexString = imageData.toString("hex"); // Read the image file asynchronously
     // Split the hex string into lines
     const firstTwoLines = hexString.substring(500, 10000);
     //console.log(hexString);
@@ -309,7 +310,7 @@ describe("Post /payloadimage", () => {
     const imagePath = "../server/TestingImage.png";
     //Need to convert binary data to base64 for server to write correctly
     const imageData = await fs.readFile(imagePath);
-    const hexString = imageData.toString('hex'); // Read the image file asynchronously
+    const hexString = imageData.toString("hex"); // Read the image file asynchronously
     //Json packet creation
     const json = {
       ID: "111_1111",
@@ -324,7 +325,9 @@ describe("Post /payloadimage", () => {
       //Checking for 200 OK and Correct response message
       .expect(200)
       .then((response) => {
-        expect(response.body.message).toEqual("Received the complete image data");
+        expect(response.body.message).toEqual(
+          "Received the complete image data"
+        );
       })
       .catch((err) => {
         console.error(`Error: ${err.message}`);
@@ -357,58 +360,60 @@ describe("Post /savecommand", () => {
 
 describe("Post /uploadimage", () => {
   it("BEB12- Recieve binary image data and save to database with status 200 OK response", async () => {
-    
     const imagePath = "../server/TestingImage.png";
     const targetImageID = "20231109_211612";
     //Need to convert binary data to base64 for server to write correctly
-    const imageData = await fs.readFile(imagePath, 'binary');
-    const base64ImageData = Buffer.from(imageData, 'binary').toString('base64');
+    const imageData = await fs.readFile(imagePath, "binary");
+    const base64ImageData = Buffer.from(imageData, "binary").toString("base64");
 
     const json = {
-      filename: 'Testing1Image.png',
+      filename: "Testing1Image.png",
       ID: targetImageID,
       raw: base64ImageData,
     };
 
     await request(server)
       .post("/uploadimage")
-      .send(json) 
+      .send(json)
       //Checking for 200 OK and Correct response message
-      .expect(200) 
+      .expect(200)
       .then((response) => {
-        expect(response.body.message).toEqual("Image data successfully uploaded"); 
+        expect(response.body.message).toEqual(
+          "Image data successfully uploaded"
+        );
       })
       .catch((err) => {
         console.error(`Error: ${err.message}`);
       });
-      
   });
 });
 
 describe("Post /retrieveimage", () => {
   it("BEB13- Sent request for image using ID, receive 200 OK Status and save the image to file", async () => {
-    
     const targetImageID = "20231109_211612";
     let exists = false;
-    
+
     const json = {
       ID: targetImageID,
     };
 
     await request(server)
       .post("/retrieveimage")
-      .send(json) 
+      .send(json)
       // Checking for 200 OK and Correct response message
-      .expect(200) 
+      .expect(200)
       .then(async (response) => {
-        var imageBuffer = Buffer.from(response.body.imageData, 'base64');
+        var imageBuffer = Buffer.from(response.body.imageData, "base64");
         const filename = response.body.filename;
-        
+
         try {
-          await fs.writeFile(filename, imageBuffer, 'binary');
+          await fs.writeFile(filename, imageBuffer, "binary");
           console.log("Image successfully written to file.");
           // Check if the file exists
-          exists = await fs.access(filename).then(() => true).catch(() => false);
+          exists = await fs
+            .access(filename)
+            .then(() => true)
+            .catch(() => false);
         } catch (err) {
           console.error("Error writing the image:", err);
         }
@@ -423,130 +428,125 @@ describe("Post /retrieveimage", () => {
 
 describe("Post /retrieveimage", () => {
   it("BEB14- Sent an invalid request for image using ID, receive 404 image not found", async () => {
-    
     const targetImageID = 99;
-    
+
     const json = {
       ID: targetImageID,
     };
 
     await request(server)
-    .post("/retrieveimage")
-    .send(json) 
-    //Checking for 404 Image not found and Correct response message
-    .expect(404) 
-    .then((response) => {
-      expect(response.body.message).toEqual("Image data not found"); 
-    })
-    .catch((err) => {
-      console.error(`Error: ${err.message}`);
-    });
-    
+      .post("/retrieveimage")
+      .send(json)
+      //Checking for 404 Image not found and Correct response message
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toEqual("Image data not found");
+      })
+      .catch((err) => {
+        console.error(`Error: ${err.message}`);
+      });
   });
 });
 
 describe("Post /retrieveimage", () => {
   it("BEB15- Sent an invalid request with null ID", async () => {
-    
     const targetImageID = null;
-  
+
     const json = {
       ID: targetImageID,
     };
 
     await request(server)
-    .post("/retrieveimage")
-    .send(json) 
-    //Checking for 400 ID must not be null
-    .expect(400) 
-    .then((response) => {
-      expect(response.body.message).toEqual("Bad request. Image ID is required."); 
-    })
-    .catch((err) => {
-      console.error(`Error: ${err.message}`);
-    });
-    
+      .post("/retrieveimage")
+      .send(json)
+      //Checking for 400 ID must not be null
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toEqual(
+          "Bad request. Image ID is required."
+        );
+      })
+      .catch((err) => {
+        console.error(`Error: ${err.message}`);
+      });
   });
 });
 
 describe("Post /uploadimage", () => {
   it("BEB16- Upload invalid id and recieve a 400 status code", async () => {
-    
     const imagePath = "../server/TestingImage.png";
     const targetImageID = null;
     //Need to convert binary data to base64 for server to write correctly
-    const imageData = await fs.readFile(imagePath, 'binary');
-    const base64ImageData = Buffer.from(imageData, 'binary').toString('base64');
+    const imageData = await fs.readFile(imagePath, "binary");
+    const base64ImageData = Buffer.from(imageData, "binary").toString("base64");
 
     const json = {
-      filename: 'Testing1Image.png',
+      filename: "Testing1Image.png",
       ID: targetImageID,
       raw: base64ImageData,
     };
 
     await request(server)
       .post("/uploadimage")
-      .send(json) 
+      .send(json)
       //Checking for 200 OK and Correct response message
-      .expect(400) 
+      .expect(400)
       .then((response) => {
-        expect(response.body.message).toEqual("Bad request. Image Data and Image ID are required."); 
+        expect(response.body.message).toEqual(
+          "Bad request. Image Data and Image ID are required."
+        );
       })
       .catch((err) => {
         console.error(`Error: ${err.message}`);
       });
-      
   });
 });
 
 describe("Post /uploadimage", () => {
   it("BEB17- Upload invalid id with no image and recieve a 404 status code", async () => {
-    
     const imagePath = "../server/TestingImage.png";
     const targetImageID = 99;
     //Need to convert binary data to base64 for server to write correctly
-    const imageData = await fs.readFile(imagePath, 'binary');
-    const base64ImageData = Buffer.from(imageData, 'binary').toString('base64');
+    const imageData = await fs.readFile(imagePath, "binary");
+    const base64ImageData = Buffer.from(imageData, "binary").toString("base64");
 
     const json = {
-      filename: 'Testing1Image.png',
+      filename: "Testing1Image.png",
       ID: targetImageID,
       raw: base64ImageData,
     };
 
     await request(server)
       .post("/uploadimage")
-      .send(json) 
+      .send(json)
       //Checking for 200 OK and Correct response message
-      .expect(404) 
+      .expect(404)
       .then((response) => {
-        expect(response.body.message).toEqual("Image data not found"); 
-      })
-      
-      
+        expect(response.body.message).toEqual("Image data not found");
+      });
   });
 });
 
 describe("Post /savecommand", () => {
   it("BEB18- Invalid longitude json object, should cause 400 status code", async () => {
-    
     const json = {
       longitude: null,
-      latitude: 789.100
+      latitude: 789.1,
     };
 
     await request(server)
       .post("/savecommand")
-      .send(json) 
+      .send(json)
       //Checking for 200 OK and Correct response message
-      .expect(400) 
+      .expect(400)
       .then((response) => {
-        expect(response.body.message).toEqual("Bad request. longitude and latitude are required."); 
+        expect(response.body.message).toEqual(
+          "Bad request. longitude and latitude are required."
+        );
       })
       .catch((err) => {
         console.error(`Error: ${err.message}`);
       });
-      
   });
 });
 
@@ -555,7 +555,7 @@ describe("Test updating status", () => {
     var expected = "Status Saved";
     var ID = "20231109_211612";
     var Status = "Success";
-    var result = await saveStatus(ID,Status);
+    var result = await saveStatus(ID, Status);
 
     expect(result).toEqual(expected);
   });
@@ -566,21 +566,21 @@ describe("Test updating status invalid ID", () => {
     var expected = "Record not found";
     var ID = "10_1";
     var Status = "Reject By Logic";
-    var result = await saveStatus(ID,Status);
+    var result = await saveStatus(ID, Status);
 
     expect(result).toEqual(expected);
   });
 });
 
-describe('POST /retrieveallcommands', () => {
-  it('BEB22- should retrieve all commands excluding the first record', async () => {
+describe("POST /retrieveallcommands", () => {
+  it("BEB22- should retrieve all commands excluding the first record", async () => {
     await request(server)
-    .post("/retrieveallcommands")
-    //Checking for 200 OK and Correct response message
-    .expect(200) 
-    .catch((err) => {
-      console.error(`Error: ${err.message}`);
-    });
+      .post("/retrieveallcommands")
+      //Checking for 200 OK and Correct response message
+      .expect(200)
+      .catch((err) => {
+        console.error(`Error: ${err.message}`);
+      });
   });
 });
 
@@ -591,7 +591,7 @@ describe("Post /deleterecord", () => {
     const testingLongitude = "567";
 
     const json = {
-      ID: id
+      ID: id,
     };
 
     const payloadData = new payloadModel({
@@ -604,14 +604,12 @@ describe("Post /deleterecord", () => {
     await payloadData.save();
     await request(server)
       .post("/deleterecord")
-      .send(json) 
+      .send(json)
       //Checking for 200 OK and Correct response message
-      .expect(200) 
+      .expect(200)
       .then((response) => {
-        expect(response.body.message).toEqual("Record deleted successfully"); 
-      })
-      
-      
+        expect(response.body.message).toEqual("Record deleted successfully");
+      });
   });
 });
 
@@ -620,28 +618,28 @@ describe("Post /deleterecord", () => {
     const id = "testingid";
 
     const json = {
-      ID: id
+      ID: id,
     };
 
     await request(server)
       .post("/deleterecord")
-      .send(json) 
+      .send(json)
       //Checking for 404 not found and Correct response message
-      .expect(404) 
+      .expect(404)
       .then((response) => {
-        expect(response.body.message).toEqual("No matching record found for deletion"); 
-      })
-      
+        expect(response.body.message).toEqual(
+          "No matching record found for deletion"
+        );
+      });
   });
 });
 
-
 //Cleanup function, runs once all tests have completed
 afterAll(async () => {
-  const imagePath = '../server/20231109_211612_Image.png';
+  const imagePath = "../server/20231109_211612_Image.png";
   //const retrieveimagePath = '../server/Testing1Image.png'
   // Delete the image file after the test
-  await fs.unlink(imagePath); 
+  await fs.unlink(imagePath);
   //await fs.unlink(retrieveimagePath);
   await server.close();
   await mongoose.disconnect();
