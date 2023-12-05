@@ -210,12 +210,6 @@ app.post("/Status", async (req, res) => {
   const ID = req.body.ID;
   const Status = req.body.Status;
 
-  // if (!ID || !Status) {
-  //   console.log("Failed the check...");
-  //   return res.status(400).send({
-  //     message: "Bad request.ID and Status is required.",
-  //   });
-  // }
   var stringStatus;
 
   switch (parseInt(Status)) {
