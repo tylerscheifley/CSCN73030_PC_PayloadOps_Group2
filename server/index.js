@@ -58,19 +58,6 @@ app.post("/request", async (req, res) => {
   };
 
   try {
-    const response = await axios.post(
-      `${groundStationPayloadIp}/request`,
-      json,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    console.log(`statusCode: ${response.status}`);
-    console.log(response.data);
-
     // Handle the response as needed
     //const timeStamp = (new Date()).toISOString().replace(/[^0-9]/g, '').slice(0, -3);
     const timeStamp = serverfunction.generateRequestID();
@@ -82,6 +69,17 @@ app.post("/request", async (req, res) => {
     });
 
     await payloadData.save();
+    const response = await axios.post(
+      `${groundStationPayloadIp}/request`,
+      json,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log(`statusCode: ${response.status}`);
+    console.log(response.data);
   } catch (error) {
     console.error("Error:", error.message);
     res.status(500).send("Internal Server Error");
