@@ -23,16 +23,6 @@ connectDB();
 const fs = require("fs");
 const serverfunction = require("./ServerFunctions");
 
-//let imageCollection;
-
-// MongoClient.connect(connectionUri).then(client => {
-//   console.log('Connected to database');
-//   const db = client.db('PayloadImages');
-//   imageCollection = db.collection('Images');
-
-// })
-// .catch(error=> console.error(error));
-
 //Default route
 app.use(express.static("client/build"));
 

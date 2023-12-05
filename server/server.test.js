@@ -62,29 +62,6 @@ describe("POST /GroundStationPayload", () => {
   });
 });
 
-//Outdated unit test, new implementation of payloadimage route created in sprint 2
-
-// describe("POST /payloadimage", () => {
-//   it("BEB03- should return binary image data with response code 200", async () => {
-//     const response = await request(server).post("/payloadimage");
-//     var imagePath = "../server/testimagerecieved.png";
-//     var imagecreated = false;
-
-//     // Write binary data to the image file and wait for the operation to complete
-//     try {
-//       await fs.writeFile(imagePath, response.body);
-//       console.log("Image file has been successfully created");
-
-//       await fs.access(imagePath, fs.constants.F_OK);
-//       console.log("File exists");
-//       imagecreated = true;
-//     } catch (err) {
-//       console.error("Error writing or checking image file:", err);
-//     }
-
-//     expect(imagecreated).toEqual(true);
-//   });
-// });
 // POST PayloadImage, null data being sent
 describe("POST /payloadimage", () => {
   it("BEB03- Send Invalid request with no image data, expect 400 response", async () => {

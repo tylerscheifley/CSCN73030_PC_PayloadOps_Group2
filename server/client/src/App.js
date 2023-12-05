@@ -10,58 +10,6 @@ import {
   OrbitControls,
 } from "@react-three/drei";
 
-const data = [
-  {
-    time: "10:22:01-2023-10-18",
-    coordinates: "41.40338, 2.17403",
-    imageID: "I1",
-    status: "Success",
-  },
-  {
-    time: "10:24:11-2023-10-18",
-    coordinates: "41.40338, 2.17403",
-    imageID: "I2",
-    status: "Reject-By-Structure",
-  },
-  {
-    time: "10:34:11-2023-10-18",
-    coordinates: "41.40338, 2.17403",
-    imageID: "I3",
-    status: "Unknown",
-  },
-  {
-    time: "10:34:11-2023-10-18",
-    coordinates: "41.40338, 2.17403",
-    imageID: "I4",
-    status: "Reject-By-Logic",
-  },
-  {
-    time: "10:24:11-2023-10-18",
-    coordinates: "41.40338, 2.17403",
-    imageID: "I5",
-    status: "Success",
-  },
-  {
-    time: "10:34:11-2023-10-18",
-    coordinates: "41.40338, 2.17403",
-    imageID: "I6",
-    status: "Reject-By-Loss",
-  },
-  {
-    time: "10:34:11-2023-10-18",
-    coordinates: "41.40338, 2.17403",
-    imageID: "I7",
-    status: "Success",
-  },
-];
-
-function ProcessCreateRecord() {
-  // const long = event.target("long").value;
-  // const lat = document.getElementById("lat").value;
-  // const file = document.getElementById("myFile").value;
-  // alert(long + "\n lat = " + lat);
-}
-
 function Model(props) {
   const { scene } = useGLTF("/source.glb");
   return <primitive object={scene} {...props} />;
