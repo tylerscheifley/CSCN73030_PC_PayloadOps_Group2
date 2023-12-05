@@ -58,6 +58,17 @@ app.post("/request", async (req, res) => {
   };
 
   try {
+    // Handle the response as needed
+    //const timeStamp = (new Date()).toISOString().replace(/[^0-9]/g, '').slice(0, -3);
+    const timeStamp = serverfunction.generateRequestID();
+    const payloadData = new payloadModel({
+      latitude: latitude,
+      longitude: longitude,
+      date: timeStamp,
+      imageID: timeStamp,
+    });
+
+    await payloadData.save();
     const response = await axios.post(
       `${groundStationPayloadIp}/request`,
       json,
@@ -70,24 +81,11 @@ app.post("/request", async (req, res) => {
 
     console.log(`statusCode: ${response.status}`);
     console.log(response.data);
-
-    // Handle the response as needed
-    //const timeStamp = (new Date()).toISOString().replace(/[^0-9]/g, '').slice(0, -3);
-    const timeStamp = serverfunction.generateRequestID();
-    const payloadData = new payloadModel({
-      latitude: latitude,
-      longitude: longitude,
-      date: timeStamp,
-      imageID: timeStamp,
-    });
-
-    await payloadData.save();
   } catch (error) {
     console.error("Error:", error.message);
     res.status(500).send("Internal Server Error");
   }
 });
-
 //Get Image from payload
 //Updated POST payloadimage
 // Get Image from payload
@@ -251,7 +249,6 @@ app.post("/Status", async (req, res) => {
 
   try {
     console.log("BEFORE ID " + ID + "Status" + stringStatus);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
     const saveResult = await serverfunction.saveStatus(ID, stringStatus);
     console.log("Save result: ", saveResult);
   } catch (error) {
