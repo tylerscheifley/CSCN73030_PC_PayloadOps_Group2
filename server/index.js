@@ -165,10 +165,12 @@ app.post("/payloadimage", async (req, res) => {
         });
 
         // Loop through hex string, convert to binary, and write to binary output file
+        let accumulatedBuffer = Buffer.alloc(0);
         for (let i = 0; i < concatenatedData.length; i += 2) {
           const byteString = concatenatedData.slice(i, i + 2);
           const byte = parseInt(byteString, 16);
           imageFile.write(Buffer.from([byte]));
+          accumulatedBuffer = Buffer.concat([accumulatedBuffer, Buffer.from([byte])]);
         }
 
         imageFile.close();
@@ -192,7 +194,7 @@ app.post("/payloadimage", async (req, res) => {
       res.status(200).send({
         message: "Received image received",
       });
-      await serverfunction.updateDocument(concatenatedData, ID);
+      await serverfunction.updateDocument(accumulatedBuffer, ID);
     });
   } else {
     // When the flag is not raised, send status 200 OK single packet received
