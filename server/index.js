@@ -40,12 +40,12 @@ app.post("/request", async (req, res) => {
   console.log("Longitude: " + longitude);
   console.log("Latitude: " + latitude);
 
-  if (!longitude || !latitude) {
-    console.log("Failed the check...");
-    return res.status(400).send({
-      message: "Bad request. Longitude and Latitude are required.",
-    });
-  }
+  // if (!longitude || !latitude) {
+  //   console.log("Failed the check...");
+  //   return res.status(400).send({
+  //     message: "Bad request. Longitude and Latitude are required.",
+  //   });
+  // }
 
   const groundStationPayloadIp = "http://25.55.209.53:5000";
   const id = serverfunction.generateRequestID();
@@ -54,7 +54,6 @@ app.post("/request", async (req, res) => {
     ID: id,
     Longitude: longitude,
     Latitude: latitude,
-    NumberOfImages: 2, // remove
   };
 
   try {
@@ -65,7 +64,7 @@ app.post("/request", async (req, res) => {
       latitude: latitude,
       longitude: longitude,
       date: timeStamp,
-      imageID: timeStamp,
+      imageID: id,
     });
 
     await payloadData.save();
@@ -78,7 +77,6 @@ app.post("/request", async (req, res) => {
         },
       }
     );
-
     console.log(`statusCode: ${response.status}`);
     console.log(response.data);
   } catch (error) {
@@ -86,6 +84,7 @@ app.post("/request", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
 //Get Image from payload
 //Updated POST payloadimage
 // Get Image from payload
@@ -211,12 +210,12 @@ app.post("/Status", async (req, res) => {
   const ID = req.body.ID;
   const Status = req.body.Status;
 
-  if (!ID || !Status) {
-    console.log("Failed the check...");
-    return res.status(400).send({
-      message: "Bad request.ID and Status is required.",
-    });
-  }
+  // if (!ID || !Status) {
+  //   console.log("Failed the check...");
+  //   return res.status(400).send({
+  //     message: "Bad request.ID and Status is required.",
+  //   });
+  // }
   var stringStatus;
 
   switch (parseInt(Status)) {
