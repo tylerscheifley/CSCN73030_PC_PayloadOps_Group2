@@ -100,6 +100,8 @@ app.post("/request", async (req, res) => {
 
 //Get Image from payload
 //Updated POST payloadimage
+// Get Image from payload
+// Updated POST payloadimage
 app.post("/payloadimage", async (req, res) => {
   const ImageData = req.body.raw;
   const ID = req.body.ID;
@@ -124,27 +126,33 @@ app.post("/payloadimage", async (req, res) => {
     });
   }
 
-  // Convert ImageData hex data to binary
-  //const imageBuffer = Buffer.from(ImageData, "hex");
   const formatedContent = `${sequenceNumber},${ImageData}\n`;
-  const tempFile = fs.createWriteStream(tempTxtPath, { encoding: 'utf8' });
-  tempFile.appendFile(formatedContent);
-  tempFile.close();
+  fs.appendFile(tempTxtPath, formatedContent, "utf8", (err) => {
+    if (err) {
+      console.log(err);
+      // Get the file contents after the append operation
+      console.log("Error writing image file: ", err);
+      res.status(500).send({
+        message: "Error writing image data",
+      });
+    }
+  });
 
+  console.log("" + `${sequenceNumber}` + " Packet Received and saved");
 
-    // Writing image can begin once fin flag is raised
-    if (finFlag === true) {
-      // Reading the entire file of temp txt file
-      fs.readFile(tempTxtPath, "utf8", async (err, data) => {
-        if (err) {
-          console.log("Error reading temp file: ", err);
-          return res.status(500).send({
-            message: "Error reading image data",
-          });
-        }
+  // Writing image can begin once fin flag is raised
+  if (finFlag === true) {
+    // Reading the entire file of temp txt file
+    fs.readFile(tempTxtPath, "utf8", async (err, data) => {
+      if (err) {
+        console.log("Error reading temp file: ", err);
+        return res.status(500).send({
+          message: "Error reading image data",
+        });
+      }
 
-        // Sorting the data based on the sequence number
-        const sortedData = data
+      // Sorting the data based on the sequence number
+      const sortedData = data
         .split("\n")
         .filter((line) => line.trim() !== "")
         .map((line) => {
@@ -155,51 +163,54 @@ app.post("/payloadimage", async (req, res) => {
           };
         })
         .sort((a, b) => a.seqNum - b.seqNum)
-        .map((item) => item.binaryData)
+        .map((item) => item.binaryData);
 
-        // Concatenating sorted data into a single Buffer
-        const concatenatedData = sortedData.join('');
-        
-        try {
-          // Creating a write stream for binary output
-          const imageFile = fs.createWriteStream(imagePath, { encoding: 'binary' });
-      
-          // Loop through hex string, convert to binary, and write to binary output file
-          for (let i = 0; i < concatenatedData.length; i += 2) {
-            const byteString = concatenatedData.slice(i, 2);
-            const byte = parseInt(byteString, 16);
-            imageFile.write(Buffer.from([byte]));
-          }
-          
-          imageFile.close();
-      
-        } catch (error) {
-          console.log("Error writing image data to file");
-          res.status(500).send({
-            message: "Error writing image data to file",
-          });
+      // Concatenating sorted data into a single Buffer
+      const concatenatedData = sortedData.join("");
+
+      try {
+        // Creating a write stream for binary output
+        const imageFile = fs.createWriteStream(imagePath, {
+          encoding: "binary",
+        });
+
+        // Loop through hex string, convert to binary, and write to binary output file
+        for (let i = 0; i < concatenatedData.length; i += 2) {
+          const byteString = concatenatedData.slice(i, i + 2);
+          const byte = parseInt(byteString, 16);
+          imageFile.write(Buffer.from([byte]));
         }
-        
-          // Deleting temp txt file
-          fs.unlink(tempTxtPath, (err) => {
-            if (err) {
-              console.error("Error deleting temp file:", err);
-            } else {
-              console.log(`Temp file ${tempTxtPath} deleted`);
-            }
-          });
 
-          // Calling database function to save sorted Data to corresponding ID
-          await serverfunction.updateDocument(tempBuffer, ID);
-        
+        imageFile.close();
+      } catch (error) {
+        console.log("Error writing image data to file");
+        res.status(500).send({
+          message: "Error writing image data to file",
+        });
+      }
+
+      // Deleting temp txt file
+      fs.unlink(tempTxtPath, (err) => {
+        if (err) {
+          console.error("Error deleting temp file:", err);
+        } else {
+          console.log(`Temp file ${tempTxtPath} deleted`);
+        }
       });
-    } else {
-      // When the flag is not raised, send status 200 OK single packet received
+
+      // Calling database function to save sorted Data to corresponding ID
       res.status(200).send({
-        message: "Received image packet",
+        message: "Received image received",
       });
-    }
-  });
+      await serverfunction.updateDocument(concatenatedData, ID);
+    });
+  } else {
+    // When the flag is not raised, send status 200 OK single packet received
+    res.status(200).send({
+      message: "Received image packet",
+    });
+  }
+});
 
 app.post("/Status", async (req, res) => {
   //json object with a status and id
