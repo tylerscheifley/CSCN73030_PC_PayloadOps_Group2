@@ -44,15 +44,36 @@ function App() {
   };
 
   const handlePopupSubmit = (event) => {
+    event.preventDefault();
     if (!Popuplatitude || !Popuplongitude) {
       alert("Values not entered");
       return;
     }
 
-    const data = {
-      longitude: Popuplongitude,
-      latitude: Popuplatitude,
-    };
+    // Check if latitude is a valid number
+    if (isNaN(latitude)) {
+      alert("Latitude must be a valid number");
+      return;
+    }
+
+    // Check if longitude is a valid number
+    if (isNaN(longitude)) {
+      alert("Longitude must be a valid number");
+      return;
+    }
+
+    // Check if latitude and longitude are within valid ranges
+    if (
+      latitude < -90 ||
+      latitude > 90 ||
+      longitude < -180 ||
+      longitude > 180
+    ) {
+      alert(
+        "Latitude must be between -90 and 90, and longitude must be between -180 and 180"
+      );
+      return;
+    }
 
     fetch("/savecommand", {
       method: "POST",
@@ -113,11 +134,41 @@ function App() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (!Popuplatitude || !Popuplongitude) {
+      alert("Values not entered");
+      return;
+    }
+
+    // Check if latitude is a valid number
+    if (isNaN(latitude)) {
+      alert("Latitude must be a valid number");
+      return;
+    }
+
+    // Check if longitude is a valid number
+    if (isNaN(longitude)) {
+      alert("Longitude must be a valid number");
+      return;
+    }
+
+    // Check if latitude and longitude are within valid ranges
+    if (
+      latitude < -90 ||
+      latitude > 90 ||
+      longitude < -180 ||
+      longitude > 180
+    ) {
+      alert(
+        "Latitude must be between -90 and 90, and longitude must be between -180 and 180"
+      );
+      return;
+    }
+
     alert(
       `You have submitted \nLatitude: ${latitude}\nLongitude: ${longitude}`
     );
 
-    //send the data to the server in json
+    // Send the data to the server in JSON
     const data = {
       Latitude: latitude,
       Longitude: longitude,
