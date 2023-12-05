@@ -394,28 +394,6 @@ function App() {
         </div>
       </form>
 
-      <div className="ImageDesc">
-        <p>📄 Request an image from the database...</p>
-        <p>Enter the image id below:</p>
-      </div>
-
-      <form onSubmit={null}>
-        <div className="input-group">
-          <input
-            onChange={null}
-            className="textbox"
-            type="text"
-            id="request1"
-          />
-        </div>
-
-        <div className="buttonLayout">
-          <button type="submit" className="submit-btn">
-            Load Image
-          </button>
-        </div>
-      </form>
-
       <div className="input-group">
         <br></br>
         <Popup
