@@ -134,10 +134,6 @@ function App() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!Popuplatitude || !Popuplongitude) {
-      alert("Values not entered");
-      return;
-    }
 
     // Check if latitude is a valid number
     if (isNaN(latitude)) {
