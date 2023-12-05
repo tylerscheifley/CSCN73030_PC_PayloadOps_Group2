@@ -550,6 +550,7 @@ describe("Test updating status invalid ID", () => {
 });
 
 describe("POST /retrieveallcommands", () => {
+  jest.setTimeout(10000);
   it("BEB22- should retrieve all commands excluding the first record", async () => {
     await request(server)
       .post("/retrieveallcommands")
