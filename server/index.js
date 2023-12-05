@@ -126,7 +126,7 @@ app.post("/payloadimage", async (req, res) => {
 
   // Convert ImageData hex data to binary
   //const imageBuffer = Buffer.from(ImageData, "hex");
-  const formatedContent = `${sequenceNumber},${imageData}\n`;
+  const formatedContent = `${sequenceNumber},${ImageData}\n`;
   const tempFile = fs.createWriteStream(tempTxtPath, { encoding: 'utf8' });
   tempFile.appendFile(formatedContent);
   tempFile.close();
